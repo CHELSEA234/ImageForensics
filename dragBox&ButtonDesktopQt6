@@ -72,8 +72,8 @@ class ImageWindow(QMainWindow):
         self.image_label.adjustSize()
 
         self.resize(image.width(), image.height())
-
-        # Convert QPixmap to numpy array
+        """
+        Convert QPixmap to numpy array
         image_array = cv2.imread(image_path)
         if image_array is not None:
             self.selected_image_array = image_array
@@ -82,7 +82,15 @@ class ImageWindow(QMainWindow):
             print(self.selected_image_array)
         else:
             print("Failed to read the image file.")
+        """
+        temp_file_path = "temp_image.png"
+        image.save(temp_file_path)
 
+        image_array = cv2.imread(temp_file_path)
+
+        self.selected_image_array = image_array
+
+        
         return image_array
 
 
