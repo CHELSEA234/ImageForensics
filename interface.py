@@ -1,7 +1,7 @@
 import cv2
-from PyQt6.QtCore import Qt, QMimeData
-from PyQt6.QtGui import QDragEnterEvent, QDropEvent, QImage, QPixmap, QFont
-from PyQt6.QtWidgets import QApplication, QLabel, QMainWindow, QPushButton, QFileDialog, QVBoxLayout, QWidget
+from PyQt5.QtCore import Qt, QMimeData
+from PyQt5.QtGui import QDragEnterEvent, QDropEvent, QImage, QPixmap, QFont
+from PyQt5.QtWidgets import QApplication, QLabel, QMainWindow, QPushButton, QFileDialog, QVBoxLayout, QWidget
 from usage import analysis
 
 
