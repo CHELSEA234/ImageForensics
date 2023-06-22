@@ -1,6 +1,5 @@
-import numpy as np
 import cv2
-from PyQt6.QtCore import Qt, QMimeData, QUrl
+from PyQt6.QtCore import Qt, QMimeData
 from PyQt6.QtGui import QDragEnterEvent, QDropEvent, QImage, QPixmap, QFont
 from PyQt6.QtWidgets import QApplication, QLabel, QMainWindow, QPushButton, QFileDialog, QVBoxLayout, QWidget
 
@@ -34,9 +33,7 @@ class ImageWindow(QMainWindow):
         widget.setLayout(layout)
         self.setCentralWidget(widget)
 
-        # self.select_button.clicked.connect(self.select_image)
         self.selected_image_array = None
-
 
     def dragEnterEvent(self, event: QDragEnterEvent):
         if event.mimeData().hasUrls():
@@ -60,14 +57,7 @@ class ImageWindow(QMainWindow):
             if selected_files:
                 image_path = selected_files[0]
                 # Call the display_image method to display the selected image
-
                 self.display_image(image_path)
-                # Access the numpy array image
-                if self.selected_image_array is not None:
-                    print("Selected Image Array:")
-                    print(self.selected_image_array)
-
-                print(self.selected_image_array)
 
     def display_image(self, image_path: str):
         image = QImage(image_path)
@@ -84,20 +74,16 @@ class ImageWindow(QMainWindow):
         self.resize(image.width(), image.height())
 
         # Convert QPixmap to numpy array
-
-        # save the QImage to a temp file
-        temp_file_path = "temp_image.png"
-        image.save(temp_file_path)
-
-        image_array = cv2.imread(temp_file_path)
-        self.selected_image_array = image_array
-
-
-        # Print the array shape and content
-        print(image_array)
+        image_array = cv2.imread(image_path)
+        if image_array is not None:
+            self.selected_image_array = image_array
+            # Print the array shape and content
+            print("Selected Image Array:")
+            print(self.selected_image_array)
+        else:
+            print("Failed to read the image file.")
 
         return image_array
-
 
 
 if __name__ == "__main__":
