@@ -41,8 +41,8 @@ class HiFi_Net():
 
     def _transform_image(self, image_name):
         '''transform the image.'''
-        image = imageio.imread(image_name)
-        image = Image.fromarray(image)
+        #image = imageio.imread(image_name)
+        image = Image.fromarray(image_name)
         image = image.resize((256,256), resample=Image.BICUBIC)
         image = np.asarray(image)
         image = image.astype(np.float32) / 255.
