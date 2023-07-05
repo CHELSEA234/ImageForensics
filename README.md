@@ -1,6 +1,6 @@
 # ImageForensics
 
-- For each sample, we can produce results including one binary mask, detection score, 4 feature maps and one TSNE plot.
+- For each sample, we can produce results including one binary mask, detection score, 4 feature maps and one TSNE plot. All of these results need to go to the layout discussed beforehand. Please take a look on page 6 of [slides](https://docs.google.com/presentation/d/1SeVhILx0nB8tYWWkawuV9mAX2usNe3_epjOdQ8_Mk24/edit?usp=sharing).
 - The quick usage on HiFi_Net with the new viz code.
 ```python
   from HiFi_Net import HiFi_Net 
