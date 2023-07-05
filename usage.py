@@ -1,5 +1,7 @@
 from HiFi_Net import HiFi_Net
 from PIL import Image
+from io import BytesIO
+import base64
 
 from MulticoreTSNE import MulticoreTSNE as TSNE
 
@@ -23,12 +25,21 @@ HiFi = HiFi_Net()
 
 def img_analysis(img_path):
     res3, prob3, feat_map = HiFi.detect(img_path)
-    HiFi.viz_feature_map(feat_map, img_path)
+    HiFi.viz_feature_map(feat_map, 'result.png')
     print(res3, prob3)
+
+    detection = "real"
+    if res3 == 1:
+        detection = "fake"
+    
+    imgdata = base64.b64decode(detection)
+    filename = 'demo.jpg'
+    with open(filename, 'wb') as f:
+        f.write(imgdata)
 
     pred_mask_name = img_path.replace('.', '_pred_mask.')
     binary_mask = HiFi.localize(img_path)
-    HiFi.viz_tsne_plot(img_path)
+    HiFi.viz_tsne_plot('result.png')
     binary_mask = Image.fromarray((binary_mask*255.).astype(np.uint8))
     #binary_mask.save(pred_mask_name)
 

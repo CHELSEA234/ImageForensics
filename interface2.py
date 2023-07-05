@@ -11,12 +11,12 @@ class MyGUI(QMainWindow):
         self.label.setPixmap(QPixmap('asset/sample_1.jpg'))
         self.label.setPixmap(QPixmap('asset/sample_1.jpg'))
         self.label_2.setPixmap(QPixmap('asset/sample_1.jpg'))
-        self.label_3.setPixmap(QPixmap('asset/sample_1.jpg'))
-        self.label_4.setPixmap(QPixmap('asset/sample_1.jpg'))
-        self.label_5.setPixmap(QPixmap('asset/sample_1.jpg'))
-        self.label_6.setPixmap(QPixmap('asset/sample_1.jpg'))
-        self.label_7.setPixmap(QPixmap('asset/sample_1.jpg'))
-        self.label_8.setPixmap(QPixmap('asset/sample_1.jpg'))
+        self.label_3.setPixmap(QPixmap('pred_mask.png'))
+        self.label_4.setPixmap(QPixmap('result_tsne.png'))
+        self.label_5.setPixmap(QPixmap('result_feat_32.png'))
+        self.label_6.setPixmap(QPixmap('result_feat_64.png'))
+        self.label_7.setPixmap(QPixmap('result_feat_128.png'))
+        self.label_8.setPixmap(QPixmap('result_feat_256.png'))
         self.show()
 
 
