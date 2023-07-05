@@ -4,7 +4,6 @@ from PyQt5.QtGui import QDragEnterEvent, QDropEvent, QImage, QPixmap, QFont
 from PyQt5.QtWidgets import QApplication, QLabel, QMainWindow, QPushButton, QFileDialog, QVBoxLayout, QWidget
 from usage import analysis
 
-
 class ImageWindow(QMainWindow):
     def __init__(self):
         super().__init__()
@@ -26,6 +25,11 @@ class ImageWindow(QMainWindow):
         self.select_button = QPushButton("Select Image", self)
         self.select_button.clicked.connect(self.select_image)
 
+        self.ok_button = QPushButton("OK", self)
+        self.ok_button.clicked.connect(self.confirm_selection)
+        self.ok_button.setEnabled(False) 
+        self.ok_button.setVisible(False) 
+
         layout = QVBoxLayout()
         layout.addWidget(self.image_label)
         layout.addWidget(self.select_button)
@@ -46,7 +50,6 @@ class ImageWindow(QMainWindow):
             url = event.mimeData().urls()[0]
             # Get local file path from the dropped URL
             image_path = url.toLocalFile()
-
             self.display_image(image_path)
 
     def select_image(self):
@@ -68,6 +71,7 @@ class ImageWindow(QMainWindow):
         maxHeight = 600
 
         scaledPixmap = pixmap.scaled(maxWidth, maxHeight, Qt.AspectRatioMode.KeepAspectRatio)
+        self.image_label.clear()
         self.image_label.setPixmap(scaledPixmap)
         self.image_label.setText("")
         self.image_label.adjustSize()
@@ -79,6 +83,8 @@ class ImageWindow(QMainWindow):
         if image_array is not None:
             self.selected_image_array = image_array
             # Print the array shape and content
+            self.ok_button.setEnabled(True) 
+            self.ok_button.setVisible(True)
             print("Selected Image Array:")
             print(self.selected_image_array)
 
@@ -90,11 +96,20 @@ class ImageWindow(QMainWindow):
 
         return image_array
 
+    def confirm_selection(self): 
+        if self.selected_image_array is not None: 
+            self.clear_image()
+
+    def clear_image(self): 
+        self.image_label.clear()
+        self.image_label.setText(self.placeholder_text) 
+        self.ok_button.setEnabled(False) 
+        self.ok_button.setVisible(False) 
+        self.selected_image_array = None 
 
 if __name__ == "__main__":
     app = QApplication([])
     window = ImageWindow()
     window.select_button.move(10, 10)
     window.show()
-
     app.exec()
