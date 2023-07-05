@@ -10,6 +10,7 @@ from __future__ import print_function
 from .LaPlacianMs import LaPlacianMs
 from .NLCDetection_pconv import weights_init
 
+import cv2
 import os
 import logging
 import functools
@@ -489,6 +490,7 @@ class HighResolutionNet(nn.Module):
         x_fre = self.relu(x_fre)
 
         x = self.conv1(x)
+        feat_map = x.clone()
         x = self.bn1(x)
         x = self.relu(x)
         x = self.conv2(x)
@@ -525,7 +527,7 @@ class HighResolutionNet(nn.Module):
             else:
                 x_list.append(y_list[i])
         x = self.stage4(x_list)
-        return x
+        return x, feat_map
 
     def init_weights(self, pretrained='',):
         for m in self.modules():
