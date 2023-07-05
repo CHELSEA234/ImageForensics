@@ -19,7 +19,7 @@ import torch
 import torch.nn as nn
 import numpy as np
 import argparse
-import imageio as imageio
+import imageio.v2 as imageio
 
 class HiFi_Net():
     '''

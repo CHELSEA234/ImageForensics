@@ -2,7 +2,8 @@ import cv2
 from PyQt5.QtCore import Qt, QMimeData
 from PyQt5.QtGui import QDragEnterEvent, QDropEvent, QImage, QPixmap, QFont
 from PyQt5.QtWidgets import QApplication, QLabel, QMainWindow, QPushButton, QFileDialog, QVBoxLayout, QWidget
-from usage import analysis
+from usage import img_analysis
+from PIL import Image
 
 class ImageWindow(QMainWindow):
     def __init__(self):
@@ -13,6 +14,7 @@ class ImageWindow(QMainWindow):
 
         self.image_label = QLabel(self)
         self.image_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.image_path = None
         self.setCentralWidget(self.image_label)
 
         self.placeholder_text = "Drag and drop an image or click the button below to select"
@@ -46,6 +48,7 @@ class ImageWindow(QMainWindow):
         if event.mimeData().hasUrls():
             url = event.mimeData().urls()[0]
             image_path = url.toLocalFile()
+            #self.image_path = image_path
             self.display_image(image_path)
 
     def select_image(self):
@@ -56,6 +59,7 @@ class ImageWindow(QMainWindow):
             selected_files = file_dialog.selectedFiles()
             if selected_files:
                 image_path = selected_files[0]
+                #self.image_path = image_path
                 self.display_image(image_path)
 
     def display_image(self, image_path: str):
@@ -74,6 +78,8 @@ class ImageWindow(QMainWindow):
         self.image_label.adjustSize()
 
         self.resize(image.width(), image.height())
+        binary_mask = img_analysis(image_path)
+        binary_mask.save('pred_mask.png')
 
         image_array = cv2.imread(image_path)
         if image_array is not None:
@@ -82,14 +88,16 @@ class ImageWindow(QMainWindow):
             self.ok_button.setVisible(True)
             print("Selected Image Array:")
             print(self.selected_image_array)
-            binary_mask = analysis(self.selected_image_array)
-            binary_mask.save('pred_mask.png')
+            #binary_mask = analysis(self.selected_image_array)
+            #binary_mask.save('pred_mask.png')
         else:
             print("Failed to read the image file.")
-        return image_array
+        return self.selected_image_array
 
     def confirm_selection(self):
         if self.selected_image_array is not None:
+            #binary_mask = img_analysis(self.image_path)
+            #binary_mask.save('pred_mask.png')
             self.clear_image()
 
     def clear_image(self):
@@ -98,6 +106,7 @@ class ImageWindow(QMainWindow):
         self.ok_button.setEnabled(False)
         self.ok_button.setVisible(False)
         self.selected_image_array = None
+
 if __name__ == "__main__":
     app = QApplication([])
     window = ImageWindow()
