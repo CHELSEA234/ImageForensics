@@ -9,6 +9,14 @@ class MyGUI(QMainWindow):
         uic.loadUi("form.ui", self)
 
         self.label.setPixmap(QPixmap('asset/sample_1.jpg'))
+        self.label.setPixmap(QPixmap('asset/sample_1.jpg'))
+        self.label_2.setPixmap(QPixmap('asset/sample_1.jpg'))
+        self.label_3.setPixmap(QPixmap('asset/sample_1.jpg'))
+        self.label_4.setPixmap(QPixmap('asset/sample_1.jpg'))
+        self.label_5.setPixmap(QPixmap('asset/sample_1.jpg'))
+        self.label_6.setPixmap(QPixmap('asset/sample_1.jpg'))
+        self.label_7.setPixmap(QPixmap('asset/sample_1.jpg'))
+        self.label_8.setPixmap(QPixmap('asset/sample_1.jpg'))
         self.show()
 
 
