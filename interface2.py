@@ -1,7 +1,13 @@
 from PyQt5.QtWidgets import *
 from PyQt5.QtGui import QPixmap
-from PyQt5 import uic
+from PyQt5.QtCore import QSize, Qt
+import os
 
+from PyQt5.QtWidgets import *
+from PyQt5.QtGui import QPixmap
+from PyQt5.QtCore import QSize, Qt
+from PyQt5 import uic
+import os
 
 class MyGUI(QMainWindow):
     def __init__(self):
@@ -18,7 +24,6 @@ class MyGUI(QMainWindow):
         self.label_7.setPixmap(QPixmap('result_feat_128.png'))
         self.label_8.setPixmap(QPixmap('result_feat_256.png'))
         self.show()
-
 
 def main():
     app = QApplication([])
