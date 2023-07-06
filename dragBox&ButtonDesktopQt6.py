@@ -1,7 +1,7 @@
 import cv2
 from PyQt6.QtCore import Qt, QMimeData
 from PyQt6.QtGui import QDragEnterEvent, QDropEvent, QImage, QPixmap, QFont
-from PyQt6.QtWidgets import QApplication, QLabel, QMainWindow, QPushButton, QFileDialog, QVBoxLayout, QWidget
+from PyQt6.QtWidgets import QApplication, QLabel, QMainWindow, QPushButton, QFileDialog, QHBoxLayout, QVBoxLayout, QWidget, QFrame, QVBoxLayout
 
 
 class ImageWindow(QMainWindow):
@@ -25,9 +25,21 @@ class ImageWindow(QMainWindow):
         self.select_button = QPushButton("Select Image", self)
         self.select_button.clicked.connect(self.select_image)
 
+        placeholder_layout = QHBoxLayout()
+
+        self.placeholder_frames = []
+        for _ in range(3):
+            frame = QFrame(self)
+            frame.setFixedSize(100, 100)
+            frame.setStyleSheet("background-color: lightgray;")
+            frame.setLayout(QVBoxLayout())  # Set a layout for the frame
+            self.placeholder_frames.append(frame)
+            placeholder_layout.addWidget(frame)
+
         layout = QVBoxLayout()
         layout.addWidget(self.image_label)
         layout.addWidget(self.select_button)
+        layout.addLayout(placeholder_layout)
 
         widget = QWidget()
         widget.setLayout(layout)
@@ -72,17 +84,21 @@ class ImageWindow(QMainWindow):
         self.image_label.adjustSize()
 
         self.resize(image.width(), image.height())
-        """
-        Convert QPixmap to numpy array
-        image_array = cv2.imread(image_path)
-        if image_array is not None:
-            self.selected_image_array = image_array
-            # Print the array shape and content
-            print("Selected Image Array:")
-            print(self.selected_image_array)
-        else:
-            print("Failed to read the image file.")
-        """
+
+        # Clear previous placeholder images
+        for frame in self.placeholder_frames:
+            frame.setStyleSheet("background-color: lightgray;")
+            frame.layout().takeAt(0)  # Remove any existing widgets from the layout
+
+        # Scale and display the image in each placeholder frame
+        for frame in self.placeholder_frames:
+            scaledPixmap = pixmap.scaled(frame.width(), frame.height(), Qt.AspectRatioMode.KeepAspectRatio)
+            label = QLabel(frame)
+            label.setPixmap(scaledPixmap)
+            label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+            label.setScaledContents(True)
+            frame.layout().addWidget(label)
+
         temp_file_path = "temp_image.png"
         image.save(temp_file_path)
 
@@ -90,7 +106,6 @@ class ImageWindow(QMainWindow):
 
         self.selected_image_array = image_array
 
-        
         return image_array
 
 
