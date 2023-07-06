@@ -101,8 +101,8 @@ class ImageWindow(QMainWindow):
             self.ok_button.setVisible(True)
             print("Selected Image Array:")
             print(self.selected_image_array)
-            binary_mask = analysis(self.selected_image_array)
-            binary_mask.save('pred_mask.png')
+            # binary_mask = analysis(self.selected_image_array)
+            # binary_mask.save('pred_mask.png')
         else:
             print("Failed to read the image file.")
         return image_array
