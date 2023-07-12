@@ -1,19 +1,18 @@
-
-# still in development
-# change the color scheme (top priority) - psuedo code commented out at the end of program.
-# add a sound when the interface starts (top priority)
-# add functionality so that multiple image files can be taken in the interface isntead of just 1????
-# add some sort of error handling?
+import os
 import cv2
-from PyQt5.QtCore import Qt, QMimeData, QPropertyAnimation, QPoint, QTimer, QUrl
+from PyQt5.QtCore import Qt, QTimer, QSize, QRect, QPropertyAnimation, QPoint, QUrl
 from PyQt5.QtMultimedia import QSoundEffect
-from PyQt5.QtGui import QDragEnterEvent, QDropEvent, QImage, QPixmap, QFont, QScreen
+from PyQt5.QtGui import QDragEnterEvent, QDropEvent, QImage, QPixmap, QFont, QCursor
 from PyQt5.QtWidgets import QApplication, QLabel, QMainWindow, QPushButton, QFileDialog, QVBoxLayout, QWidget, \
-    QMessageBox
-from PyQt5 import uic
-# from usage import img_analysis
-from PIL import Image
+    QListView, QAbstractItemView
 
+class ThumbnailView(QListView):
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self.setIconSize(QSize(100, 100))  # Default thumbnail size
+
+    def updateThumbnailSize(self, size):
+        self.setIconSize(QSize(size, size))
 
 class MyGUI(QMainWindow):
     def __init__(self):
@@ -26,6 +25,9 @@ class MyGUI(QMainWindow):
 
         self.label_2 = QLabel(self)
         self.label_2.setPixmap(QPixmap('asset/sample_1.jpg'))
+        self.label_2.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.label_2.setScaledContents(True)
+        self.label_2.setMinimumSize(400, 300)  # Adjust the size as needed
         self.label = QLabel('fake', self)
         self.label_3 = QLabel(self)
         self.label_3.setPixmap(QPixmap('pred_mask.png'))
@@ -53,38 +55,12 @@ class MyGUI(QMainWindow):
         widget = QWidget()
         widget.setLayout(layout)
         self.setCentralWidget(widget)
-        """
-        super().__init__()
-        uic.loadUi("form.ui", self)
 
-        self.setWindowTitle("Image Viewer")
-        self.setAcceptDrops(True)
-
-        self.center_window()
-
-        self.label_2.setPixmap(QPixmap('asset/sample_1.jpg'))
-        self.label.setText('fake')
-        self.label_3.setPixmap(QPixmap('pred_mask.png'))
-        self.label_4.setPixmap(QPixmap('result_tsne.png'))
-        self.label_5.setPixmap(QPixmap('result_feat_32.png'))
-        self.label_6.setPixmap(QPixmap('result_feat_64.png'))
-        self.label_7.setPixmap(QPixmap('result_feat_128.png'))
-        self.label_8.setPixmap(QPixmap('result_feat_256.png'))
-        self.show()
-
-        self.center_window()
-
-
-        """
-        """
-          def center_window(self):
-            screen_geometry = QApplication.primaryScreen().geometry()
-            window_geometry = self.geometry()
-            window_geometry.moveCenter(screen_geometry.center())
-            self.setGeometry(window_geometry)
-
-        """
-
+    def center_window(self):
+        screen_geometry = QApplication.primaryScreen().geometry()
+        window_geometry = self.geometry()
+        window_geometry.moveCenter(screen_geometry.center())
+        self.setGeometry(window_geometry)
 
 class ImageWindow(QMainWindow):
     def __init__(self):
@@ -126,7 +102,6 @@ class ImageWindow(QMainWindow):
 
         self.select_button = QPushButton("Select Image", self)
         self.select_button.clicked.connect(self.select_image)
-        # self.select_button.setVisible(False)
         self.select_button.setStyleSheet(
             """
             QPushButton {
@@ -166,8 +141,6 @@ class ImageWindow(QMainWindow):
             """
         )
 
-        # self.ok_button.setVisible(False)
-
         layout = QVBoxLayout()
         layout.addWidget(self.welcome_label)
         layout.addWidget(self.image_label)
@@ -192,12 +165,10 @@ class ImageWindow(QMainWindow):
 
     def center_window(self):
         screen_geometry = QApplication.screens()[0].geometry()
-        window_geometry = self.geometry()
-        window_geometry.moveCenter(screen_geometry.center())
+        window_geometry = QRect(screen_geometry.center().x() - 350, screen_geometry.center().y() - 250, 700, 500)
         self.setGeometry(window_geometry)
 
     def show_welcome_screen(self):
-        # self.welcome_label.setVisible(True)
         self.image_label.setVisible(False)
         self.select_button.setVisible(False)
         self.ok_button.setVisible(False)
@@ -212,7 +183,6 @@ class ImageWindow(QMainWindow):
         self.image_label.setVisible(True)
         self.select_button.setVisible(True)
         self.ok_button.setVisible(True)
-
         self.image_label.setText("Drag and drop an image or click the button below to select")
 
     def dragEnterEvent(self, event: QDragEnterEvent):
@@ -229,6 +199,12 @@ class ImageWindow(QMainWindow):
         file_dialog = QFileDialog()
         file_dialog.setNameFilter("Image Files (*.png *.jpg *.jpeg)")
         file_dialog.setFileMode(QFileDialog.FileMode.ExistingFile)
+
+        thumbnail_view = ThumbnailView(file_dialog)
+        thumbnail_view.setViewMode(QListView.IconMode)  # Set the custom view mode
+        thumbnail_view.updateThumbnailSize(100)  # Set the thumbnail size (adjust as needed)
+        file_dialog.setOption(QFileDialog.Option.HideNameFilterDetails, True)  # Hide the filter details
+
         if file_dialog.exec() == QFileDialog.DialogCode.Accepted:
             selected_files = file_dialog.selectedFiles()
             if selected_files:
@@ -249,7 +225,11 @@ class ImageWindow(QMainWindow):
         self.image_label.setText("")
         self.image_label.adjustSize()
 
-        self.resize(image.width(), image.height())
+        # Retrieve the filename for tooltip display
+        filename = os.path.basename(image_path)
+
+        # Set the tooltip with a larger image preview
+        self.image_label.setToolTip(f'<html><img src="{image_path}" width="500" height="500"></html>')
 
         image_array = cv2.imread(image_path)
         if image_array is not None:
@@ -257,15 +237,16 @@ class ImageWindow(QMainWindow):
             self.ok_button.setEnabled(True)
             self.ok_button.setVisible(True)
             print("Selected Image Array:")
-            # print(self.selected_image_array)
-            # binary_mask = analysis(self.selected_image_array)
-            # binary_mask.save('pred_mask.png')
+            self.image_path = image_path
         else:
             print("Failed to read the image file.")
         return self.selected_image_array
 
     def confirm_selection(self):
         self.secondW = MyGUI()
+        self.secondW.show()
+        self.secondW.label_2.setPixmap(QPixmap(self.image_path))
+        self.hide()
 
     def clear_image(self):
         self.image_label.clear()
