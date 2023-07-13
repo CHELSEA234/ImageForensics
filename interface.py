@@ -84,7 +84,7 @@ class ImageWindow(QMainWindow):
         script_directory = os.path.dirname(os.path.abspath(__file__))
 
         # Construct the path to the sound file relative to the script directory
-        sound_file_path = os.path.join(script_directory, "/Users/noel/Desktop/interfaceAudio.wav")
+        sound_file_path = os.path.join(script_directory, "/home/cvlab/Downloads/interfaceAudio.wav")
 
         self.sound_file_path = sound_file_path
 
