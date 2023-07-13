@@ -1,18 +1,11 @@
 import os
+import sys
 import cv2
-from PyQt5.QtCore import Qt, QTimer, QSize, QRect, QPropertyAnimation, QPoint, QUrl
-from PyQt5.QtMultimedia import QSoundEffect
-from PyQt5.QtGui import QDragEnterEvent, QDropEvent, QImage, QPixmap, QFont, QCursor
-from PyQt5.QtWidgets import QApplication, QLabel, QMainWindow, QPushButton, QFileDialog, QVBoxLayout, QWidget, \
-    QListView, QAbstractItemView
-
-class ThumbnailView(QListView):
-    def __init__(self, parent=None):
-        super().__init__(parent)
-        self.setIconSize(QSize(100, 100))  # Default thumbnail size
-
-    def updateThumbnailSize(self, size):
-        self.setIconSize(QSize(size, size))
+from PyQt5.QtCore import Qt, QTimer, QRect, QPropertyAnimation, QPoint, QThread, pyqtSignal
+from PyQt5.QtGui import QDragEnterEvent, QDropEvent, QImage, QPixmap, QFont
+from PyQt5.QtWidgets import QApplication, QLabel, QMainWindow, QPushButton, QFileDialog, QVBoxLayout, QWidget
+from pydub import AudioSegment
+from pydub.playback import play
 
 class MyGUI(QMainWindow):
     def __init__(self):
@@ -62,6 +55,21 @@ class MyGUI(QMainWindow):
         window_geometry.moveCenter(screen_geometry.center())
         self.setGeometry(window_geometry)
 
+class AudioPlaybackThread(QThread):
+    finished_playing = pyqtSignal()
+
+    def __init__(self, sound_file_path):
+        super().__init__()
+        self.sound_file_path = sound_file_path
+
+    def run(self):
+        audio = AudioSegment.from_wav(self.sound_file_path)
+        play(audio)
+        self.finished_playing.emit()
+
+    def finish(self):
+        self.finished_playing.emit()
+
 class ImageWindow(QMainWindow):
     def __init__(self):
         super().__init__()
@@ -70,6 +78,15 @@ class ImageWindow(QMainWindow):
         self.setAcceptDrops(True)
 
         self.center_window()
+
+
+        # Get the directory path of the current script
+        script_directory = os.path.dirname(os.path.abspath(__file__))
+
+        # Construct the path to the sound file relative to the script directory
+        sound_file_path = os.path.join(script_directory, "/Users/noel/Desktop/interfaceAudio.wav")
+
+        self.sound_file_path = sound_file_path
 
         self.image_label = QLabel(self)
         self.image_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
@@ -113,7 +130,6 @@ class ImageWindow(QMainWindow):
                 font-weight: bold;
                 border-radius: 5px;
             }
-
             QPushButton:hover {
                 background-color: #0D47A1;
             }
@@ -153,30 +169,43 @@ class ImageWindow(QMainWindow):
 
         self.selected_image_array = None
 
+        #self.animation.finished.connect(self.play_init_sound)
+        self.start_audio_playback()
         self.animation.start()
-
         self.show_welcome_screen()
-        self.play_init_sound()
-
-    def play_init_sound(self):
-        sound = QSoundEffect()
-        sound.setSource(QUrl.fromLocalFile("/Users/noel/Desktop/1103 N Oak Terr.wav"))
-        sound.play()
-
-    def center_window(self):
-        screen_geometry = QApplication.screens()[0].geometry()
-        window_geometry = QRect(screen_geometry.center().x() - 350, screen_geometry.center().y() - 250, 700, 500)
-        self.setGeometry(window_geometry)
 
     def show_welcome_screen(self):
         self.image_label.setVisible(False)
         self.select_button.setVisible(False)
         self.ok_button.setVisible(False)
-        self.timer.start(2500)
+        self.welcome_label.setVisible(True)
+        self.timer.stop()
+        self.animation.start()
+        #self.play_init_sound()
+
+    def start_audio_playback(self):
+        self.welcome_label.setVisible(True)
+        self.image_label.setVisible(True)
+        self.select_button.setVisible(True)
+        self.ok_button.setVisible(True)
+        self.audio_thread = AudioPlaybackThread(self.sound_file_path)
+        self.audio_thread.finished_playing.connect(self.show_image_selection_screen)
+        self.audio_thread.start()
+
+    def play_init_sound(self):
+        audio = AudioSegment.from_wav(self.sound_file_path)
+        play(audio)
 
     def timer_timeout(self):
         self.timer.stop()
-        self.show_image_selection_screen()
+        self.image_label.setVisible(True)
+        self.select_button.setVisible(True)
+        self.ok_button.setVisible(True)
+
+    def center_window(self):
+        screen_geometry = QApplication.screens()[0].geometry()
+        window_geometry = QRect(screen_geometry.center().x() - 350, screen_geometry.center().y() - 250, 700, 500)
+        self.setGeometry(window_geometry)
 
     def show_image_selection_screen(self):
         self.welcome_label.setVisible(False)
@@ -184,7 +213,8 @@ class ImageWindow(QMainWindow):
         self.select_button.setVisible(True)
         self.ok_button.setVisible(True)
         self.image_label.setText("Drag and drop an image or click the button below to select")
-
+        self.timer.start(2000)
+        self.animation.start()
     def dragEnterEvent(self, event: QDragEnterEvent):
         if event.mimeData().hasUrls():
             event.acceptProposedAction()
@@ -199,12 +229,7 @@ class ImageWindow(QMainWindow):
         file_dialog = QFileDialog()
         file_dialog.setNameFilter("Image Files (*.png *.jpg *.jpeg)")
         file_dialog.setFileMode(QFileDialog.FileMode.ExistingFile)
-
-        thumbnail_view = ThumbnailView(file_dialog)
-        thumbnail_view.setViewMode(QListView.IconMode)  # Set the custom view mode
-        thumbnail_view.updateThumbnailSize(100)  # Set the thumbnail size (adjust as needed)
         file_dialog.setOption(QFileDialog.Option.HideNameFilterDetails, True)  # Hide the filter details
-
         if file_dialog.exec() == QFileDialog.DialogCode.Accepted:
             selected_files = file_dialog.selectedFiles()
             if selected_files:
@@ -224,12 +249,6 @@ class ImageWindow(QMainWindow):
         self.image_label.setPixmap(scaledPixmap)
         self.image_label.setText("")
         self.image_label.adjustSize()
-
-        # Retrieve the filename for tooltip display
-        filename = os.path.basename(image_path)
-
-        # Set the tooltip with a larger image preview
-        self.image_label.setToolTip(f'<html><img src="{image_path}" width="500" height="500"></html>')
 
         image_array = cv2.imread(image_path)
         if image_array is not None:
@@ -255,11 +274,10 @@ class ImageWindow(QMainWindow):
         self.ok_button.setVisible(False)
         self.selected_image_array = None
 
-
 if __name__ == "__main__":
-    app = QApplication([])
+    app = QApplication(sys.argv)
     window = ImageWindow()
     window.select_button.move(10, 10)
     window.ok_button.move(10, 50)
     window.show()
-    app.exec()
+    sys.exit(app.exec_())
