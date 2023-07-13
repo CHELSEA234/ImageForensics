@@ -28,9 +28,9 @@ def img_analysis(img_path):
     HiFi.viz_feature_map(feat_map, 'result.png')
     print(res3, prob3)
 
-    detection = "real"
+    detection = "Real"
     if res3 == 1:
-        detection = "fake"
+        detection = "Fake"
     
     imgdata = base64.b64decode(detection)
     filename = 'demo.jpg'
@@ -43,7 +43,7 @@ def img_analysis(img_path):
     binary_mask = Image.fromarray((binary_mask*255.).astype(np.uint8))
     #binary_mask.save(pred_mask_name)
 
-    return binary_mask
+    return detection, prob3, binary_mask
 
 if __name__ == '__main__':
     
