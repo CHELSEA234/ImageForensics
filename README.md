@@ -25,9 +25,9 @@ Install:
 
 Run **interface.py**:
 
-Input : image provided by the user
+Input -> image provided by the user
 
-Output : 8 windows including:
+Output -> 8 windows including:
    * Drop Box
    * Feature Map 1
    * Feature Map 2
