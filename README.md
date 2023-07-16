@@ -14,9 +14,8 @@ Create a conda environment:
 
 Install:
 
-`Python 3.x
- PyQt5 - pip3 install PyQt5
-`
+`Python 3.x`
+`PyQt5 - pip3 install PyQt5`
 
 Run **interface.py**:
 `Input = image provided by the user
