@@ -37,9 +37,9 @@ Output -> 8 windows including:
    * TSNE Result
 
 ## Interface
-Using PyQt5, this code creates a straightforward image gallery. A graphical user interface (GUI) window is made, which shows the photographs in a predetermined order. The GUI is composed of a main window that is split into two parts: a left side with a large image titled "Gallery Box" and a right side with smaller images and corresponding labels.
+Using PyQt5, this code creates a straightforward image gallery. A graphical user interface (GUI) window is made, which shows the photographs in a predetermined order. The GUI is composed of a main window that is split into two parts: a left side with a large image titled "Gallery Box" and a right side with smaller images and corresponding labels after the processing.
 
-The user can select between images and display it and then press 'OK' to proceed.
+The user can select between images and display it and then press 'OK' to proceed. 
 
 The GUI elements are created by the code using the PyQt5 package. For the layout and display of the photos, it imports important modules like QMainWindow, QVBoxLayout, QLabel, and QPixmap.
 
