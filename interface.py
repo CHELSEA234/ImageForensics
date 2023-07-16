@@ -23,8 +23,8 @@ class MyGUI(QMainWindow):
         self.setWindowTitle("Image Viewer")
         self.setAcceptDrops(True)
 
-        #self.label_2.setPixmap(QPixmap('asset/sample_1.jpg'))
-        self.label.setText(detection + "  " + str(100*prob) + '%' )
+        # self.label_2.setPixmap(QPixmap('asset/sample_1.jpg'))
+        self.label.setText(detection + "  " + str(100*prob) + '%')
         self.label_3.setPixmap(QPixmap('pred_mask.png'))
         self.label_4.setPixmap(QPixmap('result_tsne.png'))
         self.label_5.setPixmap(QPixmap('result_feat_32.png'))
@@ -33,9 +33,6 @@ class MyGUI(QMainWindow):
         self.label_8.setPixmap(QPixmap('result_feat_256.png'))
         self.show()
 
-
-
-        
         """
           def center_window(self):
             screen_geometry = QApplication.primaryScreen().geometry()
@@ -78,7 +75,8 @@ class ImageWindow(QMainWindow):
 
         self.welcome_label = QLabel("Welcome!", self)
         self.welcome_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        self.welcome_label.setFont(QFont("Arial", 24, weight=QFont.Weight.Bold))
+        self.welcome_label.setFont(
+            QFont("Arial", 24, weight=QFont.Weight.Bold))
         self.welcome_label.setGeometry(0, 0, self.width(), self.height())
 
         self.animation = QPropertyAnimation(self.welcome_label, b"pos")
@@ -149,7 +147,8 @@ class ImageWindow(QMainWindow):
 
     def play_init_sound(self):
         sound = QSoundEffect()
-        sound.setSource(QUrl.fromLocalFile("/Users/noel/Desktop/1103 N Oak Terr.wav"))
+        sound.setSource(QUrl.fromLocalFile(
+            "/Users/noel/Desktop/1103 N Oak Terr.wav"))
         sound.play()
 
     def center_window(self):
@@ -175,7 +174,8 @@ class ImageWindow(QMainWindow):
         self.select_button.setVisible(True)
         self.ok_button.setVisible(True)
 
-        self.image_label.setText("Drag and drop an image or click the button below to select")
+        self.image_label.setText(
+            "Drag and drop an image or click the button below to select")
 
     def dragEnterEvent(self, event: QDragEnterEvent):
         if event.mimeData().hasUrls():
@@ -204,7 +204,8 @@ class ImageWindow(QMainWindow):
         maxWidth = 700
         maxHeight = 500
 
-        scaledPixmap = pixmap.scaled(maxWidth, maxHeight, Qt.AspectRatioMode.KeepAspectRatio)
+        scaledPixmap = pixmap.scaled(
+            maxWidth, maxHeight, Qt.AspectRatioMode.KeepAspectRatio)
 
         self.image_label.clear()
         self.image_label.setPixmap(scaledPixmap)
