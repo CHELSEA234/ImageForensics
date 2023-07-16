@@ -7,6 +7,9 @@ This code uses the algorithm HiFi_Net for image editing detection and localizati
 
 HiFi_Net repository can be found [here](https://github.com/CHELSEA234/HiFi_IFDL/tree/main)
 
+<img width="980" alt="Screenshot 2023-07-16 at 7 49 23 PM" src="https://github.com/baranmanti/ImageForensics/assets/70177697/355dbd9d-3fef-40fb-a416-50541b7b9ff4">
+
+
 ## Usage 
 Create a conda environment: 
 
