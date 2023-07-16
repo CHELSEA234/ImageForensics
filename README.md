@@ -25,16 +25,16 @@ Install:
 
 Run **interface.py**:
 
-`Input = image provided by the user`
+Input : image provided by the user
 
-`Output = 8 windows including:
+Output : 8 windows including:
    * Drop Box
    * Feature Map 1
    * Feature Map 2
    * Feature Map 3
    * Feature Map 4
    * Binary Mask
-   * TSNE Result`
+   * TSNE Result
 
 ## Interface
 Using PyQt5, this code creates a straightforward image gallery. A graphical user interface (GUI) window is made, which shows the photographs in a predetermined order. The GUI is composed of a main window that is split into two parts: a left side with a large image titled "Gallery Box" and a right side with smaller images and corresponding labels.
