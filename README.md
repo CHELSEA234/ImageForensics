@@ -29,7 +29,7 @@ Run **interface.py**:
    * Binary Mask
    * TSNE Result`
 
-## interface.py
+## Interface
 Using PyQt5, this code creates a straightforward image gallery. A graphical user interface (GUI) window is made, which shows the photographs in a predetermined order. The GUI is composed of a main window that is split into two parts: a left side with a large image titled "Gallery Box" and a right side with smaller images and corresponding labels.
 
 The user can select between images and display it and then press 'OK' to proceed.
@@ -38,7 +38,6 @@ The GUI elements are created by the code using the PyQt5 package. For the layout
 
 The MyGUI class, which descended from QMainWindow, houses the majority of the code's functionality. The main window and its core widget are initialized, and the layout structure is specified, in the constructor __init__.
 
-## interface2.py
 
 
 
