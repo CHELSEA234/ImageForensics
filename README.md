@@ -9,9 +9,11 @@ HiFi_Net repository can be found [here](https://github.com/CHELSEA234/HiFi_IFDL/
 
 ## Usage 
 Create a conda environment: 
+
 `conda env create -f environment.yml`
 
 Install:
+
 `Python 3.x
  PyQt5 - pip3 install PyQt5
 `
