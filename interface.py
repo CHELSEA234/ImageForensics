@@ -13,34 +13,35 @@ from PyQt5.QtWidgets import QApplication, QLabel, QMainWindow, QPushButton, QFil
 from PyQt5 import uic
 from usage import img_analysis
 from PIL import Image
+from interface2 import MyGUI
 
 
-class MyGUI(QMainWindow):
-    def __init__(self, detection, prob):
-        super().__init__()
-        uic.loadUi("form.ui", self)
+# class MyGUI(QMainWindow):
+#     def __init__(self, detection, prob):
+#         super().__init__()
+#         uic.loadUi("form.ui", self)
 
-        self.setWindowTitle("Image Viewer")
-        self.setAcceptDrops(True)
+#         self.setWindowTitle("Image Viewer")
+#         self.setAcceptDrops(True)
 
-        # self.label_2.setPixmap(QPixmap('asset/sample_1.jpg'))
-        self.label.setText(detection + "  " + str(100*prob) + '%')
-        self.label_3.setPixmap(QPixmap('pred_mask.png'))
-        self.label_4.setPixmap(QPixmap('result_tsne.png'))
-        self.label_5.setPixmap(QPixmap('result_feat_32.png'))
-        self.label_6.setPixmap(QPixmap('result_feat_64.png'))
-        self.label_7.setPixmap(QPixmap('result_feat_128.png'))
-        self.label_8.setPixmap(QPixmap('result_feat_256.png'))
-        self.show()
+#         # self.label_2.setPixmap(QPixmap('asset/sample_1.jpg'))
+#         self.label.setText(detection + "  " + str(100*prob) + '%')
+#         self.label_3.setPixmap(QPixmap('pred_mask.png'))
+#         self.label_4.setPixmap(QPixmap('result_tsne.png'))
+#         self.label_5.setPixmap(QPixmap('result_feat_32.png'))
+#         self.label_6.setPixmap(QPixmap('result_feat_64.png'))
+#         self.label_7.setPixmap(QPixmap('result_feat_128.png'))
+#         self.label_8.setPixmap(QPixmap('result_feat_256.png'))
+#         self.show()
 
-        """
-          def center_window(self):
-            screen_geometry = QApplication.primaryScreen().geometry()
-            window_geometry = self.geometry()
-            window_geometry.moveCenter(screen_geometry.center())
-            self.setGeometry(window_geometry)
+#         """
+#           def center_window(self):
+#             screen_geometry = QApplication.primaryScreen().geometry()
+#             window_geometry = self.geometry()
+#             window_geometry.moveCenter(screen_geometry.center())
+#             self.setGeometry(window_geometry)
 
-        """
+#         """
 
 
 class ImageWindow(QMainWindow):
@@ -58,6 +59,7 @@ class ImageWindow(QMainWindow):
         self.setCentralWidget(self.image_label)
         self.detection = ""
         self.prob = ""
+        self.layer_string = None
 
         self.timer = QTimer()
         self.timer.timeout.connect(self.timer_timeout)
@@ -213,7 +215,7 @@ class ImageWindow(QMainWindow):
         self.image_label.adjustSize()
 
         self.resize(image.width(), image.height())
-        self.detection, self.prob, binary_mask = img_analysis(image_path)
+        self.detection, self.prob, binary_mask, self.layer_string = img_analysis(image_path)
         binary_mask.save('pred_mask.png')
 
         image_array = cv2.imread(image_path)
@@ -230,7 +232,7 @@ class ImageWindow(QMainWindow):
         return self.selected_image_array
 
     def confirm_selection(self):
-        self.secondW = MyGUI(self.detection, self.prob)
+        self.secondW = MyGUI(self.detection, self.prob, self.layer_string)
 
     def clear_image(self):
         self.image_label.clear()
