@@ -1,5 +1,15 @@
-# ImageForensics
+## ImageForensics Demo
 
+### Graph_pooling algorithm for the model parsing.
+- Please first download weights into `./RED_weights`
+- Run the bash file to call `RED.py` which generates a list of string, which predicts the hyperparameters used in the generative model.
+```bash
+  conda activate HiFi_Net_xiao
+  bash RED.sh
+```
+- Please place the output string in the first row's second window, which is the placeholder in the previous design. 
+
+### HiFi_Net for the image detection and manipulation.
 - For each sample, we can produce results including one binary mask, detection score, 4 feature maps and one TSNE plot. All of these results need to go to the layout discussed beforehand. Please take a look on page 6 of [slides](https://docs.google.com/presentation/d/1SeVhILx0nB8tYWWkawuV9mAX2usNe3_epjOdQ8_Mk24/edit?usp=sharing).
 - The quick usage on HiFi_Net with the new viz code.
 ```python

@@ -37,8 +37,8 @@ class HiFi_Net():
         FENet  = nn.DataParallel(FENet)
         SegNet = nn.DataParallel(SegNet)
 
-        self.FENet  = restore_weight_helper(FENet,  "weights/HRNet",  750001)
-        self.SegNet = restore_weight_helper(SegNet, "weights/NLCDetection", 750001)
+        self.FENet  = restore_weight_helper(FENet,  "RED_weights/HRNet",  750001)
+        self.SegNet = restore_weight_helper(SegNet, "RED_weights/NLCDetection", 750001)
         self.FENet.eval()
         self.SegNet.eval()
 
