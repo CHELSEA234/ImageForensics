@@ -10,7 +10,7 @@ from PIL import Image
 
 
 class MyGUI(QMainWindow):
-    def __init__(self, detection, prob):
+    def __init__(self, detection, prob, layer_string):
         super().__init__()
         uic.loadUi("form.ui", self)
 
@@ -19,6 +19,7 @@ class MyGUI(QMainWindow):
 
         # self.label_2.setPixmap(QPixmap('asset/sample_1.jpg'))
         self.label.setText(detection + "  " + str(100*prob) + '%')
+        self.label_2.setText(str(layer_string))
         self.label_3.setPixmap(QPixmap('pred_mask.png'))
         self.label_4.setPixmap(QPixmap('result_tsne.png'))
         self.label_5.setPixmap(QPixmap('result_feat_32.png'))
@@ -63,6 +64,6 @@ class MyGUI(QMainWindow):
 
 if __name__ == "__main__":
     app = QApplication([])
-    window = MyGUI("Fake", 0.9)
+    window = MyGUI("Fake", 0.9, ['MSE', 'ReLU', 'Sig', 'ReLU', 'SiLU', 'Down_sampling'])
     window.show()
     app.exec()
