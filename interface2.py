@@ -18,8 +18,16 @@ class MyGUI(QMainWindow):
         self.setAcceptDrops(True)
 
         # self.label_2.setPixmap(QPixmap('asset/sample_1.jpg'))
-        self.label.setText(detection + "  " + str(100*prob) + '%')
-        self.label_2.setText(str(layer_string))
+        self.label.setText("  " + detection + "  " + str(100*prob) + '%')
+        self.label.setStyleSheet("background-color:gray; color: white;")
+        
+        tmp = ""
+        for i in layer_string:
+            tmp += "  " + str(i) + '\n'
+
+        self.label_2.setText(tmp)
+        self.label_2.setStyleSheet("background-color: gray; color: white;")
+
         self.label_3.setPixmap(QPixmap('pred_mask.png'))
         self.label_4.setPixmap(QPixmap('result_tsne.png'))
         self.label_5.setPixmap(QPixmap('result_feat_32.png'))
@@ -29,11 +37,11 @@ class MyGUI(QMainWindow):
 
         self.label_9 = QLabel(self)
         self.label_9.setText("detection result")
-        self.label_9.move(100, 10)
+        self.label_9.move(100, -5)
 
         self.label_10 = QLabel(self)
-        self.label_10.setText("second plot")
-        self.label_10.move(500, 10)
+        self.label_10.setText("model parsing")
+        self.label_10.move(500, -5)
 
         self.label_11 = QLabel(self)
         self.label_11.setText("localization plot")
