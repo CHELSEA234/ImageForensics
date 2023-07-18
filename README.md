@@ -1,53 +1,44 @@
-# ImageForensics
+## ImageForensics Demo
 
-## Overview
-The main purpose of this demo is deciding if a given image by the user has any fake (edited parts) using the given algorithm below.
+### Graph_pooling algorithm for the model parsing.
+- Please first download weights into `./RED_weights`
+- Run the bash file to call `RED.py` which generates a list of string, which predicts the hyperparameters used in the generative model.
+```bash
+  conda activate HiFi_Net_xiao
+  bash RED.sh
+```
+- Please place the output string in the first row's second window, which is the placeholder in the previous design. 
 
-This code uses the algorithm HiFi_Net for image editing detection and localization, as well as the diffusion model attribution which is accepted by CVPR, and titled as "Hierarchical Fine-Grained Image Forgery Detection and Localization".
+### HiFi_Net for the image detection and manipulation.
+- For each sample, we can produce results including one binary mask, detection score, 4 feature maps and one TSNE plot. All of these results need to go to the layout discussed beforehand. Please take a look on page 6 of [slides](https://docs.google.com/presentation/d/1SeVhILx0nB8tYWWkawuV9mAX2usNe3_epjOdQ8_Mk24/edit?usp=sharing).
+- The quick usage on HiFi_Net with the new viz code.
+```python
+  from HiFi_Net import HiFi_Net 
+  from PIL import Image
+  ...
+  from MulticoreTSNE import MulticoreTSNE as TSNE # pip install MulticoreTSNE
+  ...
+  import numpy as np
 
-HiFi_Net repository can be found [here](https://github.com/CHELSEA234/HiFi_IFDL/tree/main)
+  HiFi = HiFi_Net()   # initialize
+  img_path = 'asset/sample_1.jpg'
 
-Example interface:
+  ## detection
+  res3, prob3, feat_map = HiFi.detect(args.img_path)
+  HiFi.viz_feature_map(feat_map, args.img_path)    ## output 4 feature map, e.x. sample_1_feat_32.jpg, sample_1_feat_64.jpg ...
+  print(res3, prob3)
 
-<img width="980" alt="Screenshot 2023-07-16 at 7 49 23 PM" src="https://github.com/baranmanti/ImageForensics/assets/70177697/355dbd9d-3fef-40fb-a416-50541b7b9ff4">
-
-
-## Usage 
-Create a conda environment: 
-
-`conda env create -f environment.yml`
-
-Install:
-
-`Python 3.x`
-
-`PyQt5 - pip3 install PyQt5`
-
-Run **interface.py**:
-
-Input -> image provided by the user
-
-Output -> 8 windows including:
-   * Drop Box
-   * Feature Map 1
-   * Feature Map 2
-   * Feature Map 3
-   * Feature Map 4
-   * Binary Mask
-   * TSNE Result
-
-## Interface
-Using PyQt5, this code creates a straightforward image gallery. A graphical user interface (GUI) window is made, which shows the photographs in a predetermined order. The GUI is composed of a main window that is split into two parts: a left side with a large image titled "Gallery Box" and a right side with smaller images and corresponding labels after the processing.
-
-The user can select between images and display it and then press 'OK' to proceed. 
-
-The GUI elements are created by the code using the PyQt5 package. For the layout and display of the photos, it imports important modules like QMainWindow, QVBoxLayout, QLabel, and QPixmap.
-
-The MyGUI class, which descended from QMainWindow, houses the majority of the code's functionality. The main window and its core widget are initialized, and the layout structure is specified, in the constructor __init__.
-
-
-
-
-
-
-
+  ## localization
+  pred_mask_name = args.img_path.replace('.', '_pred_mask.')
+  binary_mask = HiFi.localize(args.img_path)
+  HiFi.viz_tsne_plot(args.img_path)   ## output tsne figure, e.x. sample_1_tsne.jpg, sample_2_tsne.jpg ...
+  binary_mask = Image.fromarray((binary_mask*255.).astype(np.uint8))
+  binary_mask.save(pred_mask_name)
+```
+- Please try to reproduce the results in `./asset`
+```bash
+  python HiFi_Net.py --img_path asset/sample_1.jpg
+  python HiFi_Net.py --img_path asset/sample_2.jpg
+  python HiFi_Net.py --img_path asset/sample_3.jpg
+  python HiFi_Net.py --img_path asset/sample_4.png
+```

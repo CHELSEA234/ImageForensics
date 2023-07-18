@@ -1,82 +1,47 @@
+
+# still in development
+# change the color scheme (top priority) - psuedo code commented out at the end of program.
+# add a sound when the interface starts (top priority)
+# add functionality so that multiple image files can be taken in the interface isntead of just 1????
+# add some sort of error handling?
 import cv2
-from PyQt5.QtCore import Qt, QMimeData, QPropertyAnimation, QPoint, QTimer
-from PyQt5.QtGui import QDragEnterEvent, QDropEvent, QImage, QPixmap, QFont
+from PyQt5.QtCore import Qt, QMimeData, QPropertyAnimation, QPoint, QTimer, QUrl
+from PyQt5.QtMultimedia import QSoundEffect
+from PyQt5.QtGui import QDragEnterEvent, QDropEvent, QImage, QPixmap, QFont, QScreen
 from PyQt5.QtWidgets import QApplication, QLabel, QMainWindow, QPushButton, QFileDialog, QVBoxLayout, QWidget, \
     QMessageBox
 from PyQt5 import uic
-# from usage import img_analysis
+from usage import img_analysis
 from PIL import Image
+from interface2 import MyGUI
 
 
-class MyGUI(QMainWindow):
-    def __init__(self):
-        super().__init__()
+# class MyGUI(QMainWindow):
+#     def __init__(self, detection, prob):
+#         super().__init__()
+#         uic.loadUi("form.ui", self)
 
-        self.setWindowTitle("Image Viewer")
-        self.setAcceptDrops(True)
+#         self.setWindowTitle("Image Viewer")
+#         self.setAcceptDrops(True)
 
-        self.center_window()
+#         # self.label_2.setPixmap(QPixmap('asset/sample_1.jpg'))
+#         self.label.setText(detection + "  " + str(100*prob) + '%')
+#         self.label_3.setPixmap(QPixmap('pred_mask.png'))
+#         self.label_4.setPixmap(QPixmap('result_tsne.png'))
+#         self.label_5.setPixmap(QPixmap('result_feat_32.png'))
+#         self.label_6.setPixmap(QPixmap('result_feat_64.png'))
+#         self.label_7.setPixmap(QPixmap('result_feat_128.png'))
+#         self.label_8.setPixmap(QPixmap('result_feat_256.png'))
+#         self.show()
 
-        self.label_2 = QLabel(self)
-        self.label_2.setPixmap(QPixmap('asset/sample_1.jpg'))
-        self.label = QLabel('fake', self)
-        self.label_3 = QLabel(self)
-        self.label_3.setPixmap(QPixmap('pred_mask.png'))
-        self.label_4 = QLabel(self)
-        self.label_4.setPixmap(QPixmap('result_tsne.png'))
-        self.label_5 = QLabel(self)
-        self.label_5.setPixmap(QPixmap('result_feat_32.png'))
-        self.label_6 = QLabel(self)
-        self.label_6.setPixmap(QPixmap('result_feat_64.png'))
-        self.label_7 = QLabel(self)
-        self.label_7.setPixmap(QPixmap('result_feat_128.png'))
-        self.label_8 = QLabel(self)
-        self.label_8.setPixmap(QPixmap('result_feat_256.png'))
+#         """
+#           def center_window(self):
+#             screen_geometry = QApplication.primaryScreen().geometry()
+#             window_geometry = self.geometry()
+#             window_geometry.moveCenter(screen_geometry.center())
+#             self.setGeometry(window_geometry)
 
-        layout = QVBoxLayout()
-        layout.addWidget(self.label_2)
-        layout.addWidget(self.label)
-        layout.addWidget(self.label_3)
-        layout.addWidget(self.label_4)
-        layout.addWidget(self.label_5)
-        layout.addWidget(self.label_6)
-        layout.addWidget(self.label_7)
-        layout.addWidget(self.label_8)
-
-        widget = QWidget()
-        widget.setLayout(layout)
-        self.setCentralWidget(widget)
-        """
-        super().__init__()
-        uic.loadUi("form.ui", self)
-
-        self.setWindowTitle("Image Viewer")
-        self.setAcceptDrops(True)
-
-        self.center_window()
-
-        self.label_2.setPixmap(QPixmap('asset/sample_1.jpg'))
-        self.label.setText('fake')
-        self.label_3.setPixmap(QPixmap('pred_mask.png'))
-        self.label_4.setPixmap(QPixmap('result_tsne.png'))
-        self.label_5.setPixmap(QPixmap('result_feat_32.png'))
-        self.label_6.setPixmap(QPixmap('result_feat_64.png'))
-        self.label_7.setPixmap(QPixmap('result_feat_128.png'))
-        self.label_8.setPixmap(QPixmap('result_feat_256.png'))
-        self.show()
-
-        self.center_window()
-
-
-        """
-        """
-          def center_window(self):
-            screen_geometry = QApplication.primaryScreen().geometry()
-            window_geometry = self.geometry()
-            window_geometry.moveCenter(screen_geometry.center())
-            self.setGeometry(window_geometry)
-
-        """
+#         """
 
 
 class ImageWindow(QMainWindow):
@@ -92,6 +57,9 @@ class ImageWindow(QMainWindow):
         self.image_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.image_path = None
         self.setCentralWidget(self.image_label)
+        self.detection = ""
+        self.prob = ""
+        self.layer_string = None
 
         self.timer = QTimer()
         self.timer.timeout.connect(self.timer_timeout)
@@ -109,7 +77,8 @@ class ImageWindow(QMainWindow):
 
         self.welcome_label = QLabel("Welcome!", self)
         self.welcome_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        self.welcome_label.setFont(QFont("Arial", 24, weight=QFont.Weight.Bold))
+        self.welcome_label.setFont(
+            QFont("Arial", 24, weight=QFont.Weight.Bold))
         self.welcome_label.setGeometry(0, 0, self.width(), self.height())
 
         self.animation = QPropertyAnimation(self.welcome_label, b"pos")
@@ -176,6 +145,13 @@ class ImageWindow(QMainWindow):
         self.animation.start()
 
         self.show_welcome_screen()
+        self.play_init_sound()
+
+    def play_init_sound(self):
+        sound = QSoundEffect()
+        sound.setSource(QUrl.fromLocalFile(
+            "/Users/noel/Desktop/1103 N Oak Terr.wav"))
+        sound.play()
 
     def center_window(self):
         screen_geometry = QApplication.screens()[0].geometry()
@@ -200,7 +176,8 @@ class ImageWindow(QMainWindow):
         self.select_button.setVisible(True)
         self.ok_button.setVisible(True)
 
-        self.image_label.setText("Drag and drop an image or click the button below to select")
+        self.image_label.setText(
+            "Drag and drop an image or click the button below to select")
 
     def dragEnterEvent(self, event: QDragEnterEvent):
         if event.mimeData().hasUrls():
@@ -229,7 +206,8 @@ class ImageWindow(QMainWindow):
         maxWidth = 700
         maxHeight = 500
 
-        scaledPixmap = pixmap.scaled(maxWidth, maxHeight, Qt.AspectRatioMode.KeepAspectRatio)
+        scaledPixmap = pixmap.scaled(
+            maxWidth, maxHeight, Qt.AspectRatioMode.KeepAspectRatio)
 
         self.image_label.clear()
         self.image_label.setPixmap(scaledPixmap)
@@ -237,6 +215,8 @@ class ImageWindow(QMainWindow):
         self.image_label.adjustSize()
 
         self.resize(image.width(), image.height())
+        self.detection, self.prob, binary_mask, self.layer_string = img_analysis(image_path)
+        binary_mask.save('pred_mask.png')
 
         image_array = cv2.imread(image_path)
         if image_array is not None:
@@ -252,7 +232,7 @@ class ImageWindow(QMainWindow):
         return self.selected_image_array
 
     def confirm_selection(self):
-        self.secondW = MyGUI()
+        self.secondW = MyGUI(self.detection, self.prob, self.layer_string)
 
     def clear_image(self):
         self.image_label.clear()
@@ -269,4 +249,3 @@ if __name__ == "__main__":
     window.ok_button.move(10, 50)
     window.show()
     app.exec()
-
