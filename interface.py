@@ -1,21 +1,14 @@
 import cv2
 import sys
-import os
 from PyQt5.QtCore import Qt, QPropertyAnimation, QPoint, QTimer, QRect
 from PyQt5.QtGui import QDragEnterEvent, QDropEvent, QImage, QPixmap, QFont
-from PyQt5.QtWidgets import QApplication, QLabel, QMainWindow, QPushButton, QFileDialog, QVBoxLayout, QWidget, \
-    QMessageBox
+from PyQt5.QtWidgets import QApplication, QLabel, QMainWindow, QPushButton, QFileDialog, QVBoxLayout, QWidget
 from PyQt5 import uic
-# from usage import img_analysis
-from PIL import Image
-
-
 
 class MyGUI(QMainWindow):
     def __init__(self, detection, prob, layer_string):
         super().__init__()
         uic.loadUi("form.ui", self)
-
         self.setWindowTitle("Image Viewer")
         self.setAcceptDrops(True)
 
@@ -64,29 +57,33 @@ class MyGUI(QMainWindow):
         self.label_12.setStyleSheet("color: black; font-weight: bold;")
         self.label_12.move(530, 200)
 
+        # Position the "feature map 32" label even more to the left and increase font size
         self.label_13 = QLabel(self)
         self.label_13.setText("feature map 32")
-        self.label_13.setAlignment(Qt.AlignCenter)
         self.label_13.setStyleSheet("color: black; font-weight: bold;")
-        self.label_13.move(90, 405)
+        self.label_13.setFont(QFont("Arial", 13))  # Adjust the font size to your preference
+        self.label_13.move(35 + self.label_5.width() // 2 - self.label_13.width() // 2, 405)
 
+        # Position the "feature map 64" label even more to the left and increase font size
         self.label_14 = QLabel(self)
         self.label_14.setText("feature map 64")
-        self.label_14.setAlignment(Qt.AlignCenter)
         self.label_14.setStyleSheet("color: black; font-weight: bold;")
-        self.label_14.move(270, 405)
+        self.label_14.setFont(QFont("Arial", 13))  # Adjust the font size to your preference
+        self.label_14.move(215 + self.label_6.width() // 2 - self.label_14.width() // 2, 405)
 
+        # Position the "feature map 128" label even more to the left and increase font size
         self.label_15 = QLabel(self)
         self.label_15.setText("feature map 128")
-        self.label_15.setAlignment(Qt.AlignCenter)
         self.label_15.setStyleSheet("color: black; font-weight: bold;")
-        self.label_15.move(450, 405)
+        self.label_15.setFont(QFont("Arial", 13))  # Adjust the font size to your preference
+        self.label_15.move(410 + self.label_7.width() // 2 - self.label_15.width() // 2, 405)
 
+        # Position the "feature map 256" label even more to the left and increase font size
         self.label_16 = QLabel(self)
         self.label_16.setText("feature map 256")
-        self.label_16.setAlignment(Qt.AlignCenter)
         self.label_16.setStyleSheet("color: black; font-weight: bold;")
-        self.label_16.move(620, 405)
+        self.label_16.setFont(QFont("Arial", 13))  # Adjust the font size to your preference
+        self.label_16.move(590 + self.label_8.width() // 2 - self.label_16.width() // 2, 405)
         self.show()
 
     def center_window(self):
@@ -288,7 +285,6 @@ class ImageWindow(QMainWindow):
         self.ok_button.setEnabled(False)
         self.ok_button.setVisible(False)
         self.selected_image_array = None
-
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
