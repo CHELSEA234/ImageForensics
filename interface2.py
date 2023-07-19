@@ -32,7 +32,7 @@ class MyGUI(QMainWindow):
         self.label_6.setPixmap(QPixmap('result_feat_64.png'))
         self.label_7.setPixmap(QPixmap('result_feat_128.png'))
         self.label_8.setPixmap(QPixmap('result_feat_256.png'))
-        self.label_9.setPixmap(QPixmap('sample_2.jpg'))
+        self.label_9.setPixmap(QPixmap('sample_1.jpg'))
         
         self.label_10 = QLabel(self)
         self.label_10.setText("Detection Result")
