@@ -1,8 +1,9 @@
 import cv2
 import sys
-from PyQt5.QtCore import Qt, QPropertyAnimation, QPoint, QTimer, QRect
+from PyQt5.QtCore import Qt, QPropertyAnimation, QPoint, QTimer, QRect, QCoreApplication
 from PyQt5.QtGui import QDragEnterEvent, QDropEvent, QImage, QPixmap, QFont
-from PyQt5.QtWidgets import QApplication, QLabel, QMainWindow, QPushButton, QFileDialog, QVBoxLayout, QWidget
+from PyQt5.QtWidgets import QApplication, QLabel, QMainWindow, QPushButton, QFileDialog, QVBoxLayout, QWidget,\
+    QMessageBox
 from PyQt5 import uic
 
 class MyGUI(QMainWindow):
@@ -26,6 +27,9 @@ class MyGUI(QMainWindow):
         self.label_2.setStyleSheet("background-color: #f7c994; color: black;")
         self.label_2.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.label_2.setText(tmp)
+        self.label_2.move(1000, 1000)
+        self.label_2.setFixedWidth(325)
+        self.label_2.setFixedHeight(250)
 
         self.label_3.setPixmap(QPixmap('pred_mask.png'))
         self.label_4.setPixmap(QPixmap('result_tsne.png'))
@@ -40,54 +44,63 @@ class MyGUI(QMainWindow):
         self.label_10.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.label_10.setStyleSheet("color: black; font-weight: bold;")
         self.label_10.move(150, -5)
+        self.label_10.setFixedWidth(120)  # Set a fixed width for the label to accommodate the text.
 
         self.label_11 = QLabel(self)
         self.label_11.setText("Model Parsing")
         self.label_11.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.label_11.setStyleSheet("color: black; font-weight: bold;")
         self.label_11.move(530, -5)
+        self.label_11.setFixedWidth(120)  # Set a fixed width for the label to accommodate the text.
 
         self.label_12 = QLabel(self)
         self.label_12.setText("Localization Plot")
         self.label_12.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.label_12.setStyleSheet("color: black; font-weight: bold;")
         self.label_12.move(150, 200)
+        self.label_12.setFixedWidth(120)  # Set a fixed width for the label to accommodate the text.
 
         self.label_13 = QLabel(self)
         self.label_13.setText("tSNE Plot")
         self.label_13.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.label_13.setStyleSheet("color: black; font-weight: bold;")
         self.label_13.move(530, 200)
+        self.label_13.setFixedWidth(120)  # Set a fixed width for the label to accommodate the text.
 
         self.label_14 = QLabel(self)
         self.label_14.setText("Feature Map 32")
         self.label_14.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.label_14.setStyleSheet("color: black; font-weight: bold;")
         self.label_14.move(90, 405)
+        self.label_14.setFixedWidth(120)  # Set a fixed width for the label to accommodate the text.
 
         self.label_15 = QLabel(self)
         self.label_15.setText("Feature Map 64")
         self.label_15.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.label_15.setStyleSheet("color: black; font-weight: bold;")
         self.label_15.move(270, 405)
+        self.label_15.setFixedWidth(120)  # Set a fixed width for the label to accommodate the text.
 
         self.label_16 = QLabel(self)
         self.label_16.setText("Feature Map 128")
         self.label_16.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.label_16.setStyleSheet("color: black; font-weight: bold;")
         self.label_16.move(450, 405)
+        self.label_16.setFixedWidth(120)  # Set a fixed width for the label to accommodate the text.
 
         self.label_17 = QLabel(self)
         self.label_17.setText("Feature Map 256")
         self.label_17.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.label_17.setStyleSheet("color: black; font-weight: bold;")
         self.label_17.move(620, 405)
+        self.label_17.setFixedWidth(120)  # Set a fixed width for the label to accommodate the text.
 
         self.label_18 = QLabel(self)
         self.label_18.setText("Original Picture")
         self.label_18.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.label_18.setStyleSheet("color: black; font-weight: bold;")
         self.label_18.move(1000, -5)
+        self.label_18.setFixedWidth(120)  # Set a fixed width for the label to accommodate the text.
         self.show()
 
     def center_window(self):
@@ -95,6 +108,20 @@ class MyGUI(QMainWindow):
         window_geometry = self.geometry()
         window_geometry.moveCenter(screen_geometry.center())
         self.setGeometry(window_geometry)
+
+    def show_selected_image(self, image_path):
+        # Load the selected image and set it as the pixmap for label_2 in MyGUI
+        selected_image_pixmap = QPixmap(image_path)
+
+        # Define the desired maximum width and height for the image in the MyGUI window
+        max_width = 800
+        max_height = 800
+
+        # Scale the pixmap to fit within the desired dimensions while maintaining the aspect ratio
+        scaled_pixmap = selected_image_pixmap.scaled(max_width, max_height, Qt.AspectRatioMode.KeepAspectRatio)
+
+        # Set the scaled pixmap to label_2
+        self.label_2.setPixmap(scaled_pixmap)
 
 
 class ImageWindow(QMainWindow):
@@ -177,7 +204,7 @@ class ImageWindow(QMainWindow):
             """
         )
 
-        # self.ok_button.setVisible(False)
+        self.ok_button.setVisible(False)
 
         layout = QVBoxLayout()
         layout.addWidget(self.welcome_label)
@@ -200,8 +227,6 @@ class ImageWindow(QMainWindow):
         window_geometry = QRect(screen_geometry.center().x() - 350, screen_geometry.center().y() - 250, 700, 500)
         self.setGeometry(window_geometry)
 
-
-
     def show_welcome_screen(self):
         # self.welcome_label.setVisible(True)
         self.image_label.setVisible(False)
@@ -222,6 +247,17 @@ class ImageWindow(QMainWindow):
         self.ok_button.setVisible(True)
         self.image_label.setText("Drag and drop an image or click the button below to select")
 
+    def select_image(self):
+        file_dialog = QFileDialog()
+        file_dialog.setNameFilter("Image Files (*.png *.jpg *.jpeg)")
+        file_dialog.setFileMode(QFileDialog.FileMode.ExistingFile)
+        if file_dialog.exec() == QFileDialog.DialogCode.Accepted:
+            selected_files = file_dialog.selectedFiles()
+            if selected_files:
+                image_path = selected_files[0]
+                self.display_image(image_path)
+            else:
+                self.image_path = None
 
     def dragEnterEvent(self, event: QDragEnterEvent):
         if event.mimeData().hasUrls():
@@ -233,15 +269,32 @@ class ImageWindow(QMainWindow):
             image_path = url.toLocalFile()
             self.display_image(image_path)
 
-    def select_image(self):
-        file_dialog = QFileDialog()
-        file_dialog.setNameFilter("Image Files (*.png *.jpg *.jpeg)")
-        file_dialog.setFileMode(QFileDialog.FileMode.ExistingFile)
-        if file_dialog.exec() == QFileDialog.DialogCode.Accepted:
-            selected_files = file_dialog.selectedFiles()
-            if selected_files:
-                image_path = selected_files[0]
-                self.display_image(image_path)
+    def confirm_selection(self):
+        if self.image_path is None:
+            # Show an error message using QMessageBox
+            QMessageBox.critical(self, "Error", "Sorry, you must select an image.")
+            return
+
+        detection = "Some Detection Result"
+        prob = 0.9
+        layer_string = ["layer1", "layer2", "layer3"]
+
+        self.secondW = MyGUI(detection, prob, layer_string)
+
+        self.secondW.label_2.move(925, 250)
+        # Load the selected image and set it as the pixmap for label_2 in MyGUI
+        selected_image_pixmap = QPixmap(self.image_path)
+        max_width = 800  # Adjust the desired width for the image
+        max_height = 800  # Adjust the desired height for the image
+        scaled_pixmap = selected_image_pixmap.scaled(max_width, max_height, Qt.AspectRatioMode.KeepAspectRatio)
+
+        self.secondW.show_selected_image(self.image_path)
+
+        # Set the scaled pixmap to label_2
+        self.secondW.label_2.setPixmap(scaled_pixmap)
+
+        # Show the MyGUI window and hide the ImageWindow
+        self.secondW.show()
 
     def display_image(self, image_path: str):
         image = QImage(image_path)
@@ -249,7 +302,6 @@ class ImageWindow(QMainWindow):
 
         maxWidth = 700
         maxHeight = 500
-
         scaledPixmap = pixmap.scaled(maxWidth, maxHeight, Qt.AspectRatioMode.KeepAspectRatio)
 
         self.image_label.clear()
@@ -273,26 +325,6 @@ class ImageWindow(QMainWindow):
             print("Failed to read the image file.")
         return self.selected_image_array
 
-    def confirm_selection(self):
-        detection = "Some Detection Result"
-        prob = 0.9
-        layer_string = ["layer1", "layer2", "layer3"]
-
-        self.secondW = MyGUI(detection, prob, layer_string)
-        self.secondW.label_2.move(925, 250)
-        # Load the selected image and set it as the pixmap for label_2 in MyGUI
-        selected_image_pixmap = QPixmap(self.image_path)
-        max_width = 800  # Adjust the desired width for the image
-        max_height = 800  # Adjust the desired height for the image
-        scaled_pixmap = selected_image_pixmap.scaled(max_width, max_height, Qt.AspectRatioMode.KeepAspectRatio)
-
-        # Set the scaled pixmap to label_2
-        self.secondW.label_2.setPixmap(scaled_pixmap)
-
-        # Show the MyGUI window and hide the ImageWindow
-        self.secondW.show()
-        self.hide()
-
     def clear_image(self):
         self.image_label.clear()
         self.image_label.setText(self.placeholder_text)
@@ -300,11 +332,13 @@ class ImageWindow(QMainWindow):
         self.ok_button.setVisible(False)
         self.selected_image_array = None
 
+
 if __name__ == "__main__":
     app = QApplication(sys.argv)
     window = ImageWindow()
     window.select_button.move(10, 10)
     window.ok_button.move(10, 50)
+
     window.show()
     sys.exit(app.exec())
 
