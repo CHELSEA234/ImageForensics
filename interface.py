@@ -9,11 +9,12 @@ class MyGUI(QMainWindow):
     def __init__(self, detection, prob, layer_string):
         super().__init__()
         uic.loadUi("form.ui", self)
+
         self.setWindowTitle("Image Viewer")
         self.setAcceptDrops(True)
 
         self.label.setStyleSheet("background-color: #f7c994; color: black;")
-        self.label.setAlignment(Qt.AlignCenter)
+        self.label.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.label.setText("  " + detection + "  " + str(100 * prob) + '%')
 
         tmp = ""
@@ -23,7 +24,7 @@ class MyGUI(QMainWindow):
         tmp = tmp[:-2]
 
         self.label_2.setStyleSheet("background-color: #f7c994; color: black;")
-        self.label_2.setAlignment(Qt.AlignCenter)
+        self.label_2.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.label_2.setText(tmp)
 
         self.label_3.setPixmap(QPixmap('pred_mask.png'))
@@ -32,58 +33,61 @@ class MyGUI(QMainWindow):
         self.label_6.setPixmap(QPixmap('result_feat_64.png'))
         self.label_7.setPixmap(QPixmap('result_feat_128.png'))
         self.label_8.setPixmap(QPixmap('result_feat_256.png'))
-
-        self.label_9 = QLabel(self)
-        self.label_9.setText("detection result")
-        self.label_9.setAlignment(Qt.AlignCenter)
-        self.label_9.setStyleSheet("color: black; font-weight: bold;")
-        self.label_9.move(150, -5)
+        self.label_9.setPixmap(QPixmap('sample_1.jpg'))
 
         self.label_10 = QLabel(self)
-        self.label_10.setText("model parsing")
-        self.label_10.setAlignment(Qt.AlignCenter)
+        self.label_10.setText("Detection Result")
+        self.label_10.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.label_10.setStyleSheet("color: black; font-weight: bold;")
-        self.label_10.move(530, -5)
+        self.label_10.move(150, -5)
 
         self.label_11 = QLabel(self)
-        self.label_11.setText("localization plot")
-        self.label_11.setAlignment(Qt.AlignCenter)
+        self.label_11.setText("Model Parsing")
+        self.label_11.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.label_11.setStyleSheet("color: black; font-weight: bold;")
-        self.label_11.move(150, 200)
+        self.label_11.move(530, -5)
 
         self.label_12 = QLabel(self)
-        self.label_12.setText("tSNE plot")
-        self.label_12.setAlignment(Qt.AlignCenter)
+        self.label_12.setText("Localization Plot")
+        self.label_12.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.label_12.setStyleSheet("color: black; font-weight: bold;")
-        self.label_12.move(530, 200)
+        self.label_12.move(150, 200)
 
-        # Position the "feature map 32" label even more to the left and increase font size
         self.label_13 = QLabel(self)
-        self.label_13.setText("feature map 32")
+        self.label_13.setText("tSNE Plot")
+        self.label_13.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.label_13.setStyleSheet("color: black; font-weight: bold;")
-        self.label_13.setFont(QFont("Arial", 13))  # Adjust the font size to your preference
-        self.label_13.move(35 + self.label_5.width() // 2 - self.label_13.width() // 2, 405)
+        self.label_13.move(530, 200)
 
-        # Position the "feature map 64" label even more to the left and increase font size
         self.label_14 = QLabel(self)
-        self.label_14.setText("feature map 64")
+        self.label_14.setText("Feature Map 32")
+        self.label_14.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.label_14.setStyleSheet("color: black; font-weight: bold;")
-        self.label_14.setFont(QFont("Arial", 13))  # Adjust the font size to your preference
-        self.label_14.move(215 + self.label_6.width() // 2 - self.label_14.width() // 2, 405)
+        self.label_14.move(90, 405)
 
-        # Position the "feature map 128" label even more to the left and increase font size
         self.label_15 = QLabel(self)
-        self.label_15.setText("feature map 128")
+        self.label_15.setText("Feature Map 64")
+        self.label_15.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.label_15.setStyleSheet("color: black; font-weight: bold;")
-        self.label_15.setFont(QFont("Arial", 13))  # Adjust the font size to your preference
-        self.label_15.move(410 + self.label_7.width() // 2 - self.label_15.width() // 2, 405)
+        self.label_15.move(270, 405)
 
-        # Position the "feature map 256" label even more to the left and increase font size
         self.label_16 = QLabel(self)
-        self.label_16.setText("feature map 256")
+        self.label_16.setText("Feature Map 128")
+        self.label_16.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.label_16.setStyleSheet("color: black; font-weight: bold;")
-        self.label_16.setFont(QFont("Arial", 13))  # Adjust the font size to your preference
-        self.label_16.move(590 + self.label_8.width() // 2 - self.label_16.width() // 2, 405)
+        self.label_16.move(450, 405)
+
+        self.label_17 = QLabel(self)
+        self.label_17.setText("Feature Map 256")
+        self.label_17.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.label_17.setStyleSheet("color: black; font-weight: bold;")
+        self.label_17.move(620, 405)
+
+        self.label_18 = QLabel(self)
+        self.label_18.setText("Original Picture")
+        self.label_18.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.label_18.setStyleSheet("color: black; font-weight: bold;")
+        self.label_18.move(1000, -5)
         self.show()
 
     def center_window(self):
@@ -91,6 +95,7 @@ class MyGUI(QMainWindow):
         window_geometry = self.geometry()
         window_geometry.moveCenter(screen_geometry.center())
         self.setGeometry(window_geometry)
+
 
 class ImageWindow(QMainWindow):
     def __init__(self):
@@ -195,6 +200,8 @@ class ImageWindow(QMainWindow):
         window_geometry = QRect(screen_geometry.center().x() - 350, screen_geometry.center().y() - 250, 700, 500)
         self.setGeometry(window_geometry)
 
+
+
     def show_welcome_screen(self):
         # self.welcome_label.setVisible(True)
         self.image_label.setVisible(False)
@@ -267,16 +274,23 @@ class ImageWindow(QMainWindow):
         return self.selected_image_array
 
     def confirm_selection(self):
-        # Assuming you have the following attributes in the ImageWindow class:
         detection = "Some Detection Result"
         prob = 0.9
         layer_string = ["layer1", "layer2", "layer3"]
 
         self.secondW = MyGUI(detection, prob, layer_string)
-        self.secondW.label_2.setPixmap(QPixmap(self.image_path))
-        self.secondW.label_2.move(64, 19)  # Move the image label to the desired position under "detection results"
-        self.secondW.show()
+        self.secondW.label_2.move(925, 250)
+        # Load the selected image and set it as the pixmap for label_2 in MyGUI
+        selected_image_pixmap = QPixmap(self.image_path)
+        max_width = 800  # Adjust the desired width for the image
+        max_height = 800  # Adjust the desired height for the image
+        scaled_pixmap = selected_image_pixmap.scaled(max_width, max_height, Qt.AspectRatioMode.KeepAspectRatio)
 
+        # Set the scaled pixmap to label_2
+        self.secondW.label_2.setPixmap(scaled_pixmap)
+
+        # Show the MyGUI window and hide the ImageWindow
+        self.secondW.show()
         self.hide()
 
     def clear_image(self):
@@ -293,3 +307,4 @@ if __name__ == "__main__":
     window.ok_button.move(10, 50)
     window.show()
     sys.exit(app.exec())
+
