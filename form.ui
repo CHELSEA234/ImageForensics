@@ -178,7 +178,7 @@
     <string/>
    </property>
    <property name="pixmap">
-    <pixmap>asset/sample_2.jpg</pixmap>
+    <pixmap>asset/sample_1.jpg</pixmap>
    </property>
    <property name="scaledContents">
     <bool>true</bool>
