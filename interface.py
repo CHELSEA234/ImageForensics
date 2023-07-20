@@ -3,7 +3,7 @@ import sys
 from PyQt5.QtCore import Qt, QPropertyAnimation, QPoint, QTimer, QRect
 from PyQt5.QtGui import QDragEnterEvent, QDropEvent, QImage, QPixmap, QFont
 from PyQt5.QtWidgets import QApplication, QLabel, QMainWindow, QPushButton, QFileDialog, QVBoxLayout, QWidget,\
-    QMessageBox, QDialog
+   QDialog
 from PyQt5 import uic
 import numpy as np
 
@@ -123,6 +123,15 @@ class MyGUI(QMainWindow):
 
         # Set the scaled pixmap to label_2
         self.label_2.setPixmap(scaled_pixmap)
+class CustomErrorDialog(QDialog):
+    def __init__(self, parent=None):
+        super().__init__(parent)
+
+    def moveEvent(self, event):
+        super().moveEvent(event)
+        # Update the position of the Image Viewer main window if it's visible and move the error dialog along with it
+        if self.parent() and isinstance(self.parent(), ImageWindow):
+            self.parent().update_error_dialog_position()
 
 
 class ImageWindow(QMainWindow):
@@ -224,6 +233,8 @@ class ImageWindow(QMainWindow):
 
         self.animation.start()
         self.animation.finished.connect(self.enable_ok_button)
+        # Connect the moveEvent signal to update_error_dialog_position method
+
         self.error_dialog = None  # Store the error dialog as an attribute of the main window
 
         self.show_welcome_screen()
@@ -360,6 +371,21 @@ class ImageWindow(QMainWindow):
         # Show the MyGUI window and hide the ImageWindow
         self.secondW.show()
 
+    def moveEvent(self, event):
+        # Call the parent class method to handle the default behavior
+        super().moveEvent(event)
+
+        # Update the position of the error dialog if it's visible
+        self.update_error_dialog_position()
+
+    def update_error_dialog_position(self):
+        if self.error_dialog and self.error_dialog.isVisible():
+            # Calculate the position to center the error_dialog on the screen
+            main_window_center = self.geometry().center()
+            error_dialog_center = self.error_dialog.geometry().center()
+            error_dialog_offset = main_window_center - error_dialog_center
+            error_dialog_new_pos = self.error_dialog.pos() + error_dialog_offset
+            self.error_dialog.move(error_dialog_new_pos)
     def display_image(self, image_path: str):
         image = QImage(image_path)
         pixmap = QPixmap.fromImage(image)
