@@ -1,10 +1,11 @@
 import cv2
 import sys
-from PyQt5.QtCore import Qt, QPropertyAnimation, QPoint, QTimer, QRect, QCoreApplication
+from PyQt5.QtCore import Qt, QPropertyAnimation, QPoint, QTimer, QRect
 from PyQt5.QtGui import QDragEnterEvent, QDropEvent, QImage, QPixmap, QFont
 from PyQt5.QtWidgets import QApplication, QLabel, QMainWindow, QPushButton, QFileDialog, QVBoxLayout, QWidget,\
-    QMessageBox
+    QMessageBox, QDialog
 from PyQt5 import uic
+import numpy as np
 
 class MyGUI(QMainWindow):
     def __init__(self, detection, prob, layer_string):
@@ -131,6 +132,10 @@ class ImageWindow(QMainWindow):
         self.setWindowTitle("Image Viewer")
         self.setAcceptDrops(True)
 
+        self.ok_button = QPushButton("OK", self)
+        self.ok_button.clicked.connect(self.confirm_selection)
+        self.ok_button.setEnabled(False)
+
         self.center_window()
 
         self.image_label = QLabel(self)
@@ -162,6 +167,7 @@ class ImageWindow(QMainWindow):
         self.animation.setStartValue(QPoint(0, -self.height()))
         self.animation.setEndValue(QPoint(0, 0))
 
+
         self.select_button = QPushButton("Select Image", self)
         self.select_button.clicked.connect(self.select_image)
         # self.select_button.setVisible(False)
@@ -183,9 +189,7 @@ class ImageWindow(QMainWindow):
             """
         )
 
-        self.ok_button = QPushButton("OK", self)
-        self.ok_button.clicked.connect(self.confirm_selection)
-        self.ok_button.setEnabled(False)
+
         self.ok_button.setStyleSheet(
             """
             QPushButton {
@@ -219,8 +223,16 @@ class ImageWindow(QMainWindow):
         self.selected_image_array = None
 
         self.animation.start()
+        self.animation.finished.connect(self.enable_ok_button)
+        self.error_dialog = None  # Store the error dialog as an attribute of the main window
 
         self.show_welcome_screen()
+
+        self.show()
+
+    def enable_ok_button(self):
+        self.ok_button.setEnabled(True)
+
 
     def center_window(self):
         screen_geometry = QApplication.screens()[0].geometry()
@@ -257,7 +269,7 @@ class ImageWindow(QMainWindow):
                 image_path = selected_files[0]
                 self.display_image(image_path)
             else:
-                self.image_path = None
+                self.clear_image()
 
     def dragEnterEvent(self, event: QDragEnterEvent):
         if event.mimeData().hasUrls():
@@ -270,9 +282,61 @@ class ImageWindow(QMainWindow):
             self.display_image(image_path)
 
     def confirm_selection(self):
-        if self.image_path is None:
-            # Show an error message using QMessageBox
-            QMessageBox.critical(self, "Error", "Sorry, you must select an image.")
+        #print("Confirm selection called.")
+        if not self.image_path or self.selected_image_array is None or not np.any(self.selected_image_array):
+            # Create a custom error dialog with the main window as its parent
+            self.error_dialog = QDialog(self)
+            self.error_dialog.setWindowTitle("Error")
+            self.error_dialog.setWindowFlags(Qt.Dialog | Qt.WindowTitleHint | Qt.CustomizeWindowHint)
+            self.error_dialog.setParent(self)  # Set the main window as the parent of the error dialog
+
+            # Calculate the position to center the error_dialog on the screen
+            screen_geometry = QApplication.desktop().availableGeometry(self)
+            error_dialog_width = 400  # Adjust the width of the error_dialog
+            error_dialog_height = 200  # Adjust the height of the error_dialog
+            error_dialog_x = screen_geometry.center().x() - (error_dialog_width // 2) + 11
+            error_dialog_y = screen_geometry.center().y() - (error_dialog_height // 2) + 10
+
+            # Set the style sheet for the error_dialog
+            self.error_dialog.setStyleSheet(
+            """
+            QDialog {
+                background-color: black;
+                
+            }
+            QLabel {
+                color: white;
+                font-size: 18px;
+            }
+            """
+            )
+
+            # Move the error_dialog to the calculated position
+            self.error_dialog.move(error_dialog_x, error_dialog_y)
+            layout = QVBoxLayout(self.error_dialog)
+
+            # Set the text color to black and override the color for the QLabel showing the text
+            error_label = QLabel(" Sorry, " + " you must select an image.")
+            error_label.setAlignment(Qt.AlignmentFlag.AlignCenter)  # Align the text in the center
+
+            error_label.setStyleSheet("color: white; font-size: 18px;")  # Set the font size to 18px (adjust as needed)
+            # Set the minimum width and height of the error label to make it larger
+            error_label.setMinimumWidth(365)  # Adjust the width to make the error message larger
+            error_label.setMinimumHeight(50)  # Adjust the height to make the error message larger
+            layout.addWidget(error_label)
+
+            # Add your critical icon here, or you can use a QLabel with a pixmap of the critical icon.
+
+            # Show the custom error dialog
+            self.error_dialog.show()
+            # Add this line to process events and ensure the error_dialog is displayed properly
+            QApplication.processEvents()
+            # Start the timer to close the error dialog after 2500 milliseconds (2.5 seconds)
+            timer = QTimer(self)
+            timer.setSingleShot(True)
+            timer.timeout.connect(self.error_dialog.close)
+            timer.start(3000)
+
             return
 
         detection = "Some Detection Result"
@@ -315,7 +379,7 @@ class ImageWindow(QMainWindow):
         if image_array is not None:
             self.selected_image_array = image_array
             self.ok_button.setEnabled(True)
-            self.ok_button.setVisible(True)
+
             print("Selected Image Array:")
             self.image_path = image_path
             # print(self.selected_image_array)
@@ -323,14 +387,18 @@ class ImageWindow(QMainWindow):
             # binary_mask.save('pred_mask.png')
         else:
             print("Failed to read the image file.")
+            self.ok_button.setEnabled(False)
+
+        self.ok_button.setVisible(True)
         return self.selected_image_array
 
     def clear_image(self):
         self.image_label.clear()
-        self.image_label.setText(self.placeholder_text)
+        self.image_label.setText("Drag and drop an image or click the button below to select")
         self.ok_button.setEnabled(False)
         self.ok_button.setVisible(False)
         self.selected_image_array = None
+        self.image_path = None
 
 
 if __name__ == "__main__":
