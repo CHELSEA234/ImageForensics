@@ -2,10 +2,20 @@ import cv2
 import sys
 from PyQt5.QtCore import Qt, QPropertyAnimation, QPoint, QTimer, QRect
 from PyQt5.QtGui import QDragEnterEvent, QDropEvent, QImage, QPixmap, QFont
-from PyQt5.QtWidgets import QApplication, QLabel, QMainWindow, QPushButton, QFileDialog, QVBoxLayout, QWidget,\
-   QDialog
+from PyQt5.QtWidgets import QApplication, QLabel, QMainWindow, QPushButton, QFileDialog, QVBoxLayout, QWidget, \
+    QDialog
 from PyQt5 import uic
 import numpy as np
+
+class CustomErrorDialog(QDialog):
+    def __init__(self, parent=None):
+        super().__init__(parent)
+
+    def moveEvent(self, event):
+        super().moveEvent(event)
+        # Update the position of the Image Viewer main window if it's visible and move the error dialog along with it
+        if self.parent() and isinstance(self.parent(), ImageWindow):
+            self.parent().update_error_dialog_position()
 
 class MyGUI(QMainWindow):
     def __init__(self, detection, prob, layer_string):
@@ -123,15 +133,6 @@ class MyGUI(QMainWindow):
 
         # Set the scaled pixmap to label_2
         self.label_2.setPixmap(scaled_pixmap)
-class CustomErrorDialog(QDialog):
-    def __init__(self, parent=None):
-        super().__init__(parent)
-
-    def moveEvent(self, event):
-        super().moveEvent(event)
-        # Update the position of the Image Viewer main window if it's visible and move the error dialog along with it
-        if self.parent() and isinstance(self.parent(), ImageWindow):
-            self.parent().update_error_dialog_position()
 
 
 class ImageWindow(QMainWindow):
@@ -176,7 +177,6 @@ class ImageWindow(QMainWindow):
         self.animation.setStartValue(QPoint(0, -self.height()))
         self.animation.setEndValue(QPoint(0, 0))
 
-
         self.select_button = QPushButton("Select Image", self)
         self.select_button.clicked.connect(self.select_image)
         # self.select_button.setVisible(False)
@@ -197,7 +197,6 @@ class ImageWindow(QMainWindow):
             }
             """
         )
-
 
         self.ok_button.setStyleSheet(
             """
@@ -244,7 +243,6 @@ class ImageWindow(QMainWindow):
     def enable_ok_button(self):
         self.ok_button.setEnabled(True)
 
-
     def center_window(self):
         screen_geometry = QApplication.screens()[0].geometry()
         window_geometry = QRect(screen_geometry.center().x() - 350, screen_geometry.center().y() - 250, 700, 500)
@@ -261,7 +259,6 @@ class ImageWindow(QMainWindow):
     def timer_timeout(self):
         self.timer.stop()
         self.show_image_selection_screen()
-
 
     def show_image_selection_screen(self):
         self.welcome_label.setVisible(False)
@@ -293,7 +290,7 @@ class ImageWindow(QMainWindow):
             self.display_image(image_path)
 
     def confirm_selection(self):
-        #print("Confirm selection called.")
+        # print("Confirm selection called.")
         if not self.image_path or self.selected_image_array is None or not np.any(self.selected_image_array):
             # Create a custom error dialog with the main window as its parent
             self.error_dialog = QDialog(self)
@@ -310,16 +307,16 @@ class ImageWindow(QMainWindow):
 
             # Set the style sheet for the error_dialog
             self.error_dialog.setStyleSheet(
-            """
-            QDialog {
-                background-color: black;
-                
-            }
-            QLabel {
-                color: white;
-                font-size: 18px;
-            }
-            """
+                """
+                QDialog {
+                    background-color: black;
+    
+                }
+                QLabel {
+                    color: white;
+                    font-size: 18px;
+                }
+                """
             )
 
             # Move the error_dialog to the calculated position
@@ -327,7 +324,7 @@ class ImageWindow(QMainWindow):
             layout = QVBoxLayout(self.error_dialog)
 
             # Set the text color to black and override the color for the QLabel showing the text
-            error_label = QLabel(" Sorry, " + " you must select an image.")
+            error_label = QLabel(" Sorry, " + " you must select an image to proceed.")
             error_label.setAlignment(Qt.AlignmentFlag.AlignCenter)  # Align the text in the center
 
             error_label.setStyleSheet("color: white; font-size: 18px;")  # Set the font size to 18px (adjust as needed)
@@ -346,7 +343,7 @@ class ImageWindow(QMainWindow):
             timer = QTimer(self)
             timer.setSingleShot(True)
             timer.timeout.connect(self.error_dialog.close)
-            timer.start(3000)
+            timer.start(1100)
 
             return
 
@@ -356,17 +353,21 @@ class ImageWindow(QMainWindow):
 
         self.secondW = MyGUI(detection, prob, layer_string)
 
-        self.secondW.label_2.move(925, 250)
+        self.secondW.label_2.move(825, 50)
         # Load the selected image and set it as the pixmap for label_2 in MyGUI
         selected_image_pixmap = QPixmap(self.image_path)
-        max_width = 800  # Adjust the desired width for the image
-        max_height = 800  # Adjust the desired height for the image
+        max_width = 425  # Adjust the desired width for the image
+        max_height = 510 # Adjust the desired height for the image
         scaled_pixmap = selected_image_pixmap.scaled(max_width, max_height, Qt.AspectRatioMode.KeepAspectRatio)
 
         self.secondW.show_selected_image(self.image_path)
 
         # Set the scaled pixmap to label_2
         self.secondW.label_2.setPixmap(scaled_pixmap)
+
+        # Resize the label_9 to take up the available space
+        self.secondW.label_2.setFixedWidth(max_width)
+        self.secondW.label_2.setFixedHeight(max_height)
 
         # Show the MyGUI window and hide the ImageWindow
         self.secondW.show()
@@ -386,6 +387,7 @@ class ImageWindow(QMainWindow):
             error_dialog_offset = main_window_center - error_dialog_center
             error_dialog_new_pos = self.error_dialog.pos() + error_dialog_offset
             self.error_dialog.move(error_dialog_new_pos)
+
     def display_image(self, image_path: str):
         image = QImage(image_path)
         pixmap = QPixmap.fromImage(image)
@@ -435,4 +437,3 @@ if __name__ == "__main__":
 
     window.show()
     sys.exit(app.exec())
-
