@@ -3,7 +3,7 @@ import sys
 from PyQt5.QtCore import Qt, QPropertyAnimation, QPoint, QTimer, QRect
 from PyQt5.QtGui import QDragEnterEvent, QDropEvent, QImage, QPixmap, QFont
 from PyQt5.QtWidgets import QApplication, QLabel, QMainWindow, QPushButton, QFileDialog, QVBoxLayout, QWidget, \
-    QDialog
+    QDialog, QSizePolicy
 from PyQt5 import uic
 import numpy as np
 
@@ -115,7 +115,8 @@ class MyGUI(QMainWindow):
         self.show()
 
     def center_window(self):
-        screen_geometry = QApplication.primaryScreen().geometry()
+        desktop = QApplication.desktop()
+        screen_geometry = desktop.availableGeometry(desktop.primaryScreen())
         window_geometry = self.geometry()
         window_geometry.moveCenter(screen_geometry.center())
         self.setGeometry(window_geometry)
@@ -139,8 +140,18 @@ class ImageWindow(QMainWindow):
     def __init__(self):
         super().__init__()
 
+
         self.setWindowTitle("Image Viewer")
         self.setAcceptDrops(True)
+
+        # Create the image_label widget
+        self.image_label = QLabel(self)
+        self.image_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.image_path = None
+        self.setCentralWidget(self.image_label)
+
+        # Set the fixed size for the window
+        self.setFixedSize(700, 600)
 
         self.ok_button = QPushButton("OK", self)
         self.ok_button.clicked.connect(self.confirm_selection)
@@ -244,8 +255,10 @@ class ImageWindow(QMainWindow):
         self.ok_button.setEnabled(True)
 
     def center_window(self):
-        screen_geometry = QApplication.screens()[0].geometry()
-        window_geometry = QRect(screen_geometry.center().x() - 350, screen_geometry.center().y() - 250, 700, 500)
+        desktop = QApplication.desktop()
+        screen_geometry = desktop.availableGeometry(desktop.primaryScreen())
+        window_geometry = self.geometry()
+        window_geometry.moveCenter(screen_geometry.center())
         self.setGeometry(window_geometry)
 
     def show_welcome_screen(self):
@@ -432,6 +445,7 @@ class ImageWindow(QMainWindow):
 if __name__ == "__main__":
     app = QApplication(sys.argv)
     window = ImageWindow()
+    window.center_window()  # Center the window on the screen
     window.select_button.move(10, 10)
     window.ok_button.move(10, 50)
 
