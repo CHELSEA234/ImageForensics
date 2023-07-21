@@ -1,9 +1,9 @@
 import cv2
 import sys
-from PyQt5.QtCore import Qt, QPropertyAnimation, QPoint, QTimer, QRect
+from PyQt5.QtCore import Qt, QPropertyAnimation, QPoint, QTimer
 from PyQt5.QtGui import QDragEnterEvent, QDropEvent, QImage, QPixmap, QFont
 from PyQt5.QtWidgets import QApplication, QLabel, QMainWindow, QPushButton, QFileDialog, QVBoxLayout, QWidget, \
-    QDialog, QSizePolicy
+    QDialog
 from PyQt5 import uic
 import numpy as np
 
@@ -29,15 +29,9 @@ class MyGUI(QMainWindow):
         self.label.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.label.setText("  " + detection + "  " + str(100 * prob) + '%')
 
-        tmp = ""
-        for i in layer_string:
-            tmp += str(i) + "\n"
 
-        tmp = tmp[:-2]
 
-        self.label_2.setStyleSheet("background-color: #f7c994; color: black;")
-        self.label_2.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        self.label_2.setText(tmp)
+
         self.label_2.move(1000, 1000)
         self.label_2.setFixedWidth(325)
         self.label_2.setFixedHeight(250)
@@ -112,6 +106,29 @@ class MyGUI(QMainWindow):
         self.label_18.setStyleSheet("color: black; font-weight: bold;")
         self.label_18.move(1000, -5)
         self.label_18.setFixedWidth(120)  # Set a fixed width for the label to accommodate the text.
+
+        tmp = "\n".join(str(i) for i in layer_string)
+        tmp = tmp[:-2]
+
+       
+        self.label_19 = QLabel(self)
+        self.label_19.setText("\n".join(layer_string))  
+        self.label_19.setStyleSheet("background-color: #f7c994; color: black;")
+        self.label_19.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.label_19.move(530, 25)  
+        self.label_19.setFixedWidth(120)  
+
+        new_x = 440  
+        new_y = 20  
+        self.label_19.move(new_x, new_y)
+       
+        new_width = 300  
+        new_height = 180 
+        self.label_19.setFixedWidth(new_width) 
+        self.label_19.setFixedHeight(new_height)  
+        self.label_19.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        # self.label_2.setText(layer_string_text, tmp)
+
         self.show()
 
     def center_window(self):
@@ -151,7 +168,7 @@ class ImageWindow(QMainWindow):
         self.setCentralWidget(self.image_label)
 
         # Set the fixed size for the window
-        self.setFixedSize(700, 600)
+        self.setFixedSize(600, 600)
 
         self.ok_button = QPushButton("OK", self)
         self.ok_button.clicked.connect(self.confirm_selection)
@@ -364,12 +381,13 @@ class ImageWindow(QMainWindow):
         prob = 0.9
         layer_string = ["layer1", "layer2", "layer3"]
 
+
         self.secondW = MyGUI(detection, prob, layer_string)
 
-        self.secondW.label_2.move(825, 50)
+        self.secondW.label_2.move(850, 50)
         # Load the selected image and set it as the pixmap for label_2 in MyGUI
         selected_image_pixmap = QPixmap(self.image_path)
-        max_width = 425  # Adjust the desired width for the image
+        max_width = 375 # Adjust the desired width for the image
         max_height = 510 # Adjust the desired height for the image
         scaled_pixmap = selected_image_pixmap.scaled(max_width, max_height, Qt.AspectRatioMode.KeepAspectRatio)
 
@@ -446,8 +464,14 @@ if __name__ == "__main__":
     app = QApplication(sys.argv)
     window = ImageWindow()
     window.center_window()  # Center the window on the screen
+
     window.select_button.move(10, 10)
     window.ok_button.move(10, 50)
 
     window.show()
     sys.exit(app.exec())
+
+
+
+
+
