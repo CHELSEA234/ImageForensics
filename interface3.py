@@ -8,7 +8,7 @@ from PyQt5 import uic
 class MyGUI(QMainWindow):
     def __init__(self, detection, prob, layer_string):
         super().__init__()
-        uic.loadUi("form.ui", self)
+        uic.loadUi("form2.ui", self)
 
         self.setWindowTitle("Image Viewer")
         self.setAcceptDrops(True)
