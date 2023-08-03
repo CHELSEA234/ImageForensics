@@ -29,6 +29,7 @@ def img_analysis(img_path):
     res3, prob3, feat_map = HiFi.detect(img_path)
     HiFi.viz_feature_map(feat_map, 'result.png')
     print(res3, prob3)
+    # prob3 = f"{prob3:.3f}"
 
     detection = "Real"
     if res3 == 1:
@@ -70,4 +71,4 @@ if __name__ == '__main__':
     #arr = imageio.imread(img_path)
     
     binary_mask = img_analysis(img_path)
-    binary_mask.save('pred_mask.png')
+    # binary_mask.save('pred_mask.png')

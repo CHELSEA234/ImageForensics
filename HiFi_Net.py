@@ -112,18 +112,23 @@ class HiFi_Net():
 
         ## tsne feature.
         tsne_feat = np.reshape(tsne_feat, (tsne_feat.shape[0], -1))
-        center_feat = self.center.clone().cpu().numpy()
-        center_feat = center_feat[np.newaxis,:]
-        tsne_feat = np.concatenate((tsne_feat.T, center_feat), axis=0)
+        print(f"tsne feature is: ", tsne_feat.shape)
+        if tsne_feat.shape[-1] == 256:
+            center_feat = self.center.clone().cpu().numpy()
+            center_feat = center_feat[np.newaxis,:]
+            print(f"center feature is: ", center_feat.shape)
+            tsne_feat = np.concatenate((tsne_feat.T, center_feat), axis=0)
 
         tsne_label = np.reshape(tsne_label, (-1))
-        center_label = np.array([2])
-        tsne_label = np.concatenate((tsne_label, center_label), axis=0)
+        if tsne_label.shape[0] == 256:
+            center_label = np.array([2])
+            tsne_label = np.concatenate((tsne_label, center_label), axis=0)
 
         tsne = TSNE(n_jobs=4)
         X_embedded = tsne.fit_transform(tsne_feat)
         vis_x = X_embedded[:, 0]
         vis_y = X_embedded[:, 1]
+        plt.figure()
         plt.scatter(vis_x[tsne_label == 0], vis_y[tsne_label == 0], s=250, c='orange', marker='.')
         plt.scatter(vis_x[tsne_label == 1], vis_y[tsne_label == 1], s=250, c='blueviolet', marker='*')
         plt.scatter(vis_x[tsne_label == 2], vis_y[tsne_label == 2], s=350, c='black', marker='x')

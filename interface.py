@@ -216,8 +216,8 @@ class ImageWindow(QMainWindow):
 
         self.resize(image.width(), image.height())
         self.image_path = image_path
-        self.detection, self.prob, binary_mask, self.layer_string = img_analysis(self.image_path)
-        binary_mask.save('pred_mask.png')
+        # self.detection, self.prob, binary_mask, self.layer_string = img_analysis(self.image_path)
+        # binary_mask.save('pred_mask.png')
 
         image_array = cv2.imread(image_path)
         if image_array is not None:
@@ -233,6 +233,8 @@ class ImageWindow(QMainWindow):
         return self.selected_image_array
 
     def confirm_selection(self):
+        self.detection, self.prob, binary_mask, self.layer_string = img_analysis(self.image_path)
+        binary_mask.save('pred_mask.png')
         self.secondW = MyGUI(self.detection, self.prob, self.layer_string, self.image_path)
 
     def clear_image(self):
