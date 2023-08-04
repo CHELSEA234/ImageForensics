@@ -100,7 +100,7 @@ class MyGUI(QMainWindow):
         self.textLabel9.setStyleSheet("color: black; font-weight: bold; font-size:8pt;")
         self.textLabel9.move(self.label_9.x(),  self.label_9.y() - 25)
 
-        self.label_11.setStyleSheet("background-color: #82eefd; color: black;")
+        self.label_11.setStyleSheet("background-color: #f7c994; color: black;")
         self.label_11x = self.label_11.x()/widthScreen
         self.label_11y = self.label_11.y()/heightScreen
         self.label_11w = self.label_11.width()/widthScreen
@@ -112,26 +112,40 @@ class MyGUI(QMainWindow):
         self.textLabel11.move(self.label_11.x(), self.label_11.y() - 25)
 
         self.nodeW, self.nodeH = 15, 15
+        self.nodeWw = self.nodeW/widthScreen
+        self.nodeHh = self.nodeH/heightScreen
+
         self.level1 = QLabel(self)
         self.level1.setGeometry(418, 170, self.nodeW, self.nodeH)
+        self.level1x = 418/widthScreen
+        self.level1y = 170/heightScreen
+        #self.level1.setStyleSheet("background-color: #00ccff;")
         self.level1.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         y = 195
         x = 320
         x_diff = 205
         self.level2 = [QLabel(self) for i in range(2)]
+        self.level2x = [0 for i in range(2)]
+        self.level2y = [0 for i in range(2)]
         for i in range(2):
             self.level2[i].setGeometry(x, y,  self.nodeW, self.nodeH)
-            self.level2[i].setStyleSheet("background-color: #00ccff;")
+            self.level2x[i] = x/widthScreen
+            self.level2y[i] = y/heightScreen
+            #self.level2[i].setStyleSheet("background-color: #00ccff;")
             x = x + x_diff
         
         x = 255
         y = 215
         x_diff = 130
         self.level3 = [QLabel(self) for i in range(4)]
+        self.level3x = [0 for i in range(4)]
+        self.level3y = [0 for i in range(4)]
         for i in range(4):
             self.level3[i].setGeometry(x, y, self.nodeW, self.nodeH)
-            self.level3[i].setStyleSheet("background-color: #00ccff;")
+            self.level3x[i] = x/widthScreen
+            self.level3y[i] = y/heightScreen
+            #self.level3[i].setStyleSheet("background-color: #00ccff;")
             if i == 1:
                 x_diff = 94
             x = x + x_diff
@@ -140,18 +154,26 @@ class MyGUI(QMainWindow):
         y = 245
         x_diff = 65
         self.level4 = [QLabel(self) for i in range(4)]
+        self.level4x = [0 for i in range(4)]
+        self.level4y = [0 for i in range(4)]
         for i in range(4):
             self.level4[i].setGeometry(x, y, self.nodeW, self.nodeH)
-            self.level4[i].setStyleSheet("background-color: #00ccff;")
+            self.level4x[i] = x/widthScreen
+            self.level4y[i] = y/heightScreen
+            #self.level4[i].setStyleSheet("background-color: #00ccff;")
             x = x + x_diff
 
         x = 205
         y = 280
         x_diff = 33
         self.level5 = [QLabel(self) for i in range(13)]
+        self.level5x = [0 for i in range(13)]
+        self.level5y = [0 for i in range(13)]
         for i in range(13):
             self.level5[i].setGeometry(x, y, self.nodeW, self.nodeH)
-            self.level5[i].setStyleSheet("background-color: #00ccff;")
+            self.level5x[i] = x/widthScreen
+            self.level5y[i] = y/heightScreen
+            #self.level5[i].setStyleSheet("background-color: #00ccff;")
             x = x + x_diff
 
         self.label_10.setStyleSheet("background-color: #00ccff; color: black;")
@@ -159,7 +181,7 @@ class MyGUI(QMainWindow):
         self.label_10y = self.label_10.y()/heightScreen
         self.label_10w = self.label_10.width()/widthScreen
         self.label_10h = self.label_10.height()/heightScreen
-        self.label_10.setPixmap(QPixmap('asset/Hierarchical_Tree.png'))
+        self.label_10.setPixmap(QPixmap('Tree.png'))
 
         self.show()
 
@@ -207,12 +229,41 @@ class MyGUI(QMainWindow):
                                   self.label_11y, size.width()*self.label_11w, size.height()*self.label_11h)
         self.textLabel11.move(self.label_11.x(),  self.label_11.y() - 25)
 
+        self.level1.setGeometry(size.width()*self.level1x, size.height()*self.level1y, size.width()*self.nodeWw, size.height()*self.nodeHh)
+        for i in range(2):
+            self.level2[i].setGeometry(size.width()*self.level2x[i], size.height()*self.level2y[i], size.width()*self.nodeWw, size.height()*self.nodeHh)
+        
+        for i in range(4):
+            self.level3[i].setGeometry(size.width()*self.level3x[i], size.height()*self.level3y[i], size.width()*self.nodeWw, size.height()*self.nodeHh)
+
+        for i in range(4):
+            self.level4[i].setGeometry(size.width()*self.level4x[i], size.height()*self.level4y[i], size.width()*self.nodeWw, size.height()*self.nodeHh)
+        
+        for i in range(13):
+            self.level5[i].setGeometry(size.width()*self.level5x[i], size.height()*self.level5y[i], size.width()*self.nodeWw, size.height()*self.nodeHh)
+
 
     def mousePressEvent(self, event):
         cursor_pos = event.pos()
-        print(cursor_pos, self.level1.geometry())
+        #print(cursor_pos, self.level1.geometry())
 
+        ck = False
         if self.level1.geometry().contains(cursor_pos):
+            ck = True
+        for i in range(2):
+            if self.level2[i].geometry().contains(cursor_pos):
+                ck = True
+        for i in range(4):
+            if self.level3[i].geometry().contains(cursor_pos):
+                ck = True
+        for i in range(4):
+            if self.level4[i].geometry().contains(cursor_pos):
+                ck = True
+        for i in range(13):
+            if self.level5[i].geometry().contains(cursor_pos):
+                ck = True
+
+        if ck:
             # self.test.setStyleSheet("background-color: #00ccff; color: black;")
             dlg = QDialog(self)
             dlg.setWindowTitle("Dialog")
