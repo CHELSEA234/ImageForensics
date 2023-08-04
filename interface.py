@@ -13,7 +13,7 @@ from PyQt5.QtWidgets import QApplication, QLabel, QMainWindow, QPushButton, QFil
 from PyQt5 import uic
 from usage import img_analysis
 from PIL import Image
-from interface2 import MyGUI
+from interface3 import MyGUI
 
 
 # class MyGUI(QMainWindow):

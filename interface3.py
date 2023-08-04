@@ -6,7 +6,7 @@ from PyQt5 import uic
 
 
 class MyGUI(QMainWindow):
-    def __init__(self, detection, prob, layer_string):
+    def __init__(self, detection, prob, layer_string, image_path):
         super().__init__()
         uic.loadUi("form2.ui", self)
 
@@ -17,10 +17,10 @@ class MyGUI(QMainWindow):
         heightScreen = 600
 
         if detection == "Fake":
-            self.label.setStyleSheet("background-color: #f7c994; color: Red;")
+            self.label.setStyleSheet("background-color: #f7c994; color: Red; font-size:16pt;")
         else:
             self.label.setStyleSheet(
-                "background-color: #f7c994; color: Green;")
+                "background-color: #f7c994; color: Green; font-size:16pt;")
         self.label.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.label.setText("  " + detection + "  " + str(100 * prob) + '%')
         self.labelx = self.label.x()/widthScreen
@@ -30,7 +30,7 @@ class MyGUI(QMainWindow):
         self.textLabel = QLabel(self)
         self.textLabel.setText("Detection Result")
         self.textLabel.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        self.textLabel.setStyleSheet("color: black; font-weight: bold;")
+        self.textLabel.setStyleSheet("color: black; font-weight: bold; font-size:8pt")
         self.textLabel.move(self.label.x(),  self.label.y() - 25)
 
         tmp = ""
@@ -52,8 +52,7 @@ class MyGUI(QMainWindow):
         self.textLabel2.setStyleSheet("color: black; font-weight: bold;")
         self.textLabel2.move(self.label_2.x(),  self.label_2.y() - 25)
 
-        # self.label_3.setPixmap(QPixmap('pred_mask.png'))
-        # self.label_4.setPixmap(QPixmap('result_tsne.png'))
+
         self.label_5.setPixmap(QPixmap('pred_mask.png'))
         self.label_5x = self.label_5.x()/widthScreen
         self.label_5y = self.label_5.y()/heightScreen
@@ -64,8 +63,8 @@ class MyGUI(QMainWindow):
         self.textLabel5.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.textLabel5.setStyleSheet("color: black; font-weight: bold;")
         self.textLabel5.move(self.label_5.x(),  self.label_5.y() - 25)
-        # self.label_6.setPixmap(QPixmap('result_feat_64.png'))
-        # self.label_7.setPixmap(QPixmap('result_feat_128.png'))
+       
+
         self.label_7.setStyleSheet("background-color: #f7c994; color: black;")
         self.label_7x = self.label_7.x()/widthScreen
         self.label_7y = self.label_7.y()/heightScreen
@@ -76,6 +75,7 @@ class MyGUI(QMainWindow):
         self.textLabel7.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.textLabel7.setStyleSheet("color: black; font-weight: bold;")
         self.textLabel7.move(self.label_7.x(),  self.label_7.y() - 25)
+
 
         self.label_8.setPixmap(QPixmap('result_tsne.png'))
         self.label_8x = self.label_8.x()/widthScreen
@@ -88,7 +88,8 @@ class MyGUI(QMainWindow):
         self.textLabel8.setStyleSheet("color: black; font-weight: bold;")
         self.textLabel8.move(self.label_8.x(),  self.label_8.y() - 25)
 
-        self.label_9.setPixmap(QPixmap('asset/sample_1.jpg'))
+
+        self.label_9.setPixmap(QPixmap(image_path))
         self.label_9x = self.label_9.x()/widthScreen
         self.label_9y = self.label_9.y()/heightScreen
         self.label_9w = self.label_9.width()/widthScreen
@@ -96,20 +97,8 @@ class MyGUI(QMainWindow):
         self.textLabel9 = QLabel(self)
         self.textLabel9.setText("Original Image")
         self.textLabel9.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        self.textLabel9.setStyleSheet("color: black; font-weight: bold;")
+        self.textLabel9.setStyleSheet("color: black; font-weight: bold; font-size:8pt;")
         self.textLabel9.move(self.label_9.x(),  self.label_9.y() - 25)
-
-        # self.label_10 = QLabel(self)
-        # self.label_10.setText("Detection Result")
-        # self.label_10.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        # self.label_10.setStyleSheet("color: black; font-weight: bold;")
-        # self.label_10.move(150, -5)
-
-        # self.label_11 = QLabel(self)
-        # self.label_11.setText("Model Parsing")
-        # self.label_11.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        # self.label_11.setStyleSheet("color: black; font-weight: bold;")
-        # self.label_11.move(530, -5)
 
         self.label_11.setStyleSheet("background-color: #82eefd; color: black;")
         self.label_11x = self.label_11.x()/widthScreen
@@ -122,10 +111,48 @@ class MyGUI(QMainWindow):
         self.textLabel11.setStyleSheet("color: black; font-weight: bold;")
         self.textLabel11.move(self.label_11.x(), self.label_11.y() - 25)
 
-        self.test = QLabel(self)
-        self.test.setGeometry(418, 170, 15, 15)
-        self.test.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        # self.test.setStyleSheet("background-color: #82eefd; color: black;")
+        self.nodeW, self.nodeH = 15, 15
+        self.level1 = QLabel(self)
+        self.level1.setGeometry(418, 170, self.nodeW, self.nodeH)
+        self.level1.setAlignment(Qt.AlignmentFlag.AlignCenter)
+
+        y = 195
+        x = 320
+        x_diff = 205
+        self.level2 = [QLabel(self) for i in range(2)]
+        for i in range(2):
+            self.level2[i].setGeometry(x, y,  self.nodeW, self.nodeH)
+            self.level2[i].setStyleSheet("background-color: #00ccff;")
+            x = x + x_diff
+        
+        x = 255
+        y = 215
+        x_diff = 130
+        self.level3 = [QLabel(self) for i in range(4)]
+        for i in range(4):
+            self.level3[i].setGeometry(x, y, self.nodeW, self.nodeH)
+            self.level3[i].setStyleSheet("background-color: #00ccff;")
+            if i == 1:
+                x_diff = 94
+            x = x + x_diff
+        
+        x = 220
+        y = 245
+        x_diff = 65
+        self.level4 = [QLabel(self) for i in range(4)]
+        for i in range(4):
+            self.level4[i].setGeometry(x, y, self.nodeW, self.nodeH)
+            self.level4[i].setStyleSheet("background-color: #00ccff;")
+            x = x + x_diff
+
+        x = 205
+        y = 280
+        x_diff = 33
+        self.level5 = [QLabel(self) for i in range(13)]
+        for i in range(13):
+            self.level5[i].setGeometry(x, y, self.nodeW, self.nodeH)
+            self.level5[i].setStyleSheet("background-color: #00ccff;")
+            x = x + x_diff
 
         self.label_10.setStyleSheet("background-color: #00ccff; color: black;")
         self.label_10x = self.label_10.x()/widthScreen
@@ -133,11 +160,6 @@ class MyGUI(QMainWindow):
         self.label_10w = self.label_10.width()/widthScreen
         self.label_10h = self.label_10.height()/heightScreen
         self.label_10.setPixmap(QPixmap('asset/Hierarchical_Tree.png'))
-        self.textLabel10 = QLabel(self)
-        self.textLabel10.setText("Tree Structure")
-        self.textLabel10.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        self.textLabel10.setStyleSheet("color: black; font-weight: bold;")
-        self.textLabel10.move(self.label_10.x(),  self.label_10.y() - 25)
 
         self.show()
 
@@ -162,9 +184,6 @@ class MyGUI(QMainWindow):
                                  self.label_2y, size.width()*self.label_2w, size.height()*self.label_2h)
         self.textLabel2.move(self.label_2.x(),  self.label_2.y() - 25)
 
-        # self.label_2.setText(
-        #     f"Window size: {diff.width()}x{diff.height()}")
-
         self.label_5.setGeometry(size.width()*self.label_5x, size.height() *
                                  self.label_5y, size.width()*self.label_5w, size.height()*self.label_5h)
         self.textLabel5.move(self.label_5.x(),  self.label_5.y() - 25)
@@ -183,26 +202,17 @@ class MyGUI(QMainWindow):
 
         self.label_10.setGeometry(size.width()*self.label_10x, size.height() *
                                   self.label_10y, size.width()*self.label_10w, size.height()*self.label_10h)
-        self.textLabel10.move(self.label_10.x(),  self.label_10.y() - 25)
 
         self.label_11.setGeometry(size.width()*self.label_11x, size.height() *
                                   self.label_11y, size.width()*self.label_11w, size.height()*self.label_11h)
         self.textLabel11.move(self.label_11.x(),  self.label_11.y() - 25)
 
-    # def enterEvent(self, event):
-    #     # print(self.test.geometry())
-    #     # print(event.pos())
-    #     if self.test.geometry().contains(event.pos()):
-    #         self.test.setStyleSheet("background-color: #00ccff; color: black;")
-
-    # def leaveEvent(self, event):
-    #     self.test.setStyleSheet("background-color: #82eefd; color: black;")
 
     def mousePressEvent(self, event):
         cursor_pos = event.pos()
-        print(cursor_pos, self.test.geometry())
+        print(cursor_pos, self.level1.geometry())
 
-        if self.test.geometry().contains(cursor_pos):
+        if self.level1.geometry().contains(cursor_pos):
             # self.test.setStyleSheet("background-color: #00ccff; color: black;")
             dlg = QDialog(self)
             dlg.setWindowTitle("Dialog")
@@ -216,6 +226,6 @@ class MyGUI(QMainWindow):
 if __name__ == "__main__":
     app = QApplication([])
     window = MyGUI("Fake", 0.9, ['MSE', 'ReLU',
-                   'Sig', 'ReLU', 'SiLU', 'Down_sampling'])
+                   'Sig', 'ReLU', 'SiLU', 'Down_sampling'], 'asset/sample_1.jpg')
     window.show()
     sys.exit(app.exec())
