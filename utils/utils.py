@@ -102,7 +102,21 @@ def one_hot_label_new(vector, Softmax_m=Softmax_m):
     prob = 1 - x[:,0]
     indices = list(indices.cpu().numpy())
     prob = list(prob.cpu().numpy())
-    return indices, prob
+    prob_lst = Softmax_m(x[:,1:])
+    prob_lst = prob_lst.cpu().numpy().tolist()[0]
+    return indices, prob, prob_lst
+
+def update_string(nested_list, template_hier):
+    '''update the list with template'''
+    return_nested_lst = []
+    for idx, score_list in enumerate(nested_list):
+        name_lst = template_hier[f'level_{idx}']
+        return_list = []
+        for name_cur, score_cur in zip(name_lst, score_list):
+            # print(name_cur, score_cur)
+            return_list.append(f'{name_cur}: {score_cur:.3f}')
+        return_nested_lst.append(return_list)
+    return return_nested_lst
 
 def level_1_convert(input_lst):
     res_lst = []
