@@ -102,7 +102,7 @@ def one_hot_label_new(vector, Softmax_m=Softmax_m):
     prob = 1 - x[:,0]
     indices = list(indices.cpu().numpy())
     prob = list(prob.cpu().numpy())
-    prob_lst = Softmax_m(x[:,1:])
+    prob_lst = Softmax_m(8.*x[:,1:])
     prob_lst = prob_lst.cpu().numpy().tolist()[0]
     return indices, prob, prob_lst
 

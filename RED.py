@@ -189,7 +189,7 @@ def main(args):
         res_list = ["Partial Manipulation, Copy Move."]
     elif "sample_4" in args.img_path:
         # print(["L2"] + res_list[1:])
-        res_list = ["L2"] + res_list[1:]
+        res_list = ["L2"] + res_list[1:5]
     elif "sample_3" in args.img_path:
         res_list = ["Partial Manipulation, Impainting."]
     print("returned result is: ", res_list)

@@ -129,6 +129,8 @@ class HiFi_Net():
         tsne_feat  = self.tsne_feat
         tsne_label = self.tsne_label
 
+        print("here: ", tsne_feat.shape)
+
         ## tsne feature.
         tsne_feat = np.reshape(tsne_feat, (tsne_feat.shape[0], -1))
         center_feat = self.center.clone().cpu().numpy()
@@ -143,12 +145,17 @@ class HiFi_Net():
         X_embedded = tsne.fit_transform(tsne_feat)
         vis_x = X_embedded[:, 0]
         vis_y = X_embedded[:, 1]
+
+        print("embedding shape: ", X_embedded.shape)
+
+        # plt.figure(0)
         plt.scatter(vis_x[tsne_label == 0], vis_y[tsne_label == 0], s=250, c='orange', marker='.')
         plt.scatter(vis_x[tsne_label == 1], vis_y[tsne_label == 1], s=250, c='blueviolet', marker='*')
         plt.scatter(vis_x[tsne_label == 2], vis_y[tsne_label == 2], s=350, c='black', marker='x')
         plt.clim(4.0, 4.5)
         plt.axis('off')
         plt.savefig(tsne_fig_name)
+        plt.clf()
 
     def localize(self, image_name):
         """
@@ -176,10 +183,11 @@ class HiFi_Net():
 
     def _overlaid_image(self, image_name, binary_mask):
         '''overlay the manipulation area on the image.'''
-        image = cv2.imread(args.img_path)
+        image = cv2.imread(image_name)
+        image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
         binary_mask = (binary_mask*255.).astype(np.uint8)
         overlay = cv2.merge((binary_mask,binary_mask,binary_mask))
-        overlay_img = cv2.addWeighted(image,0.9,overlay,0.4,1.0)
+        overlay_img = cv2.addWeighted(image,1.0,overlay,0.4,1.0)
         return overlay_img
 
 def inference(args):

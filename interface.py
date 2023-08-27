@@ -233,9 +233,11 @@ class ImageWindow(QMainWindow):
         return self.selected_image_array
 
     def confirm_selection(self):
-        self.detection, self.prob, binary_mask, self.layer_string = img_analysis(self.image_path)
+        self.detection, self.prob, binary_mask, self.layer_string, nested_text_list, text_colusion, overlay_image = img_analysis(self.image_path)
         binary_mask.save('pred_mask.png')
-        self.secondW = MyGUI(self.detection, self.prob, self.layer_string, self.image_path)
+        overlay_image.save('overlay_image.png')
+        self.secondW = MyGUI(self.detection, self.prob, self.layer_string, self.image_path, nested_text_list, text_colusion, overlay_image)
+        self.secondW.setStyleSheet("QMainWindow {background:#E7DAD2;}")
 
     def clear_image(self):
         self.image_label.clear()

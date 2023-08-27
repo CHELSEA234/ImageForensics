@@ -26,7 +26,7 @@ HiFi = HiFi_Net()
 #     return binary_mask
 
 def img_analysis(img_path):
-    res3, prob3, feat_map = HiFi.detect(img_path)
+    res3, prob3, feat_map, nested_text_list, text_colusion = HiFi.detect(img_path)
     HiFi.viz_feature_map(feat_map, 'result.png')
     print(res3, prob3)
     # prob3 = f"{prob3:.3f}"
@@ -40,10 +40,6 @@ def img_analysis(img_path):
     with open(filename, 'wb') as f:
         f.write(imgdata)
 
-    pred_mask_name = img_path.replace('.', '_pred_mask.')
-    binary_mask = HiFi.localize(img_path)
-    HiFi.viz_tsne_plot('result.png')
-    binary_mask = Image.fromarray((binary_mask*255.).astype(np.uint8))
     #binary_mask.save(pred_mask_name)
 
     parser = argparse.ArgumentParser()
@@ -63,7 +59,13 @@ def img_analysis(img_path):
 
     layer_string = main(args)
 
-    return detection, prob3, binary_mask, layer_string
+    pred_mask_name = img_path.replace('.', '_pred_mask.')
+    binary_mask, overlay_image = HiFi.localize(img_path)
+    HiFi.viz_tsne_plot('result.png')
+    binary_mask = Image.fromarray((binary_mask*255.).astype(np.uint8))
+    overlay_image = Image.fromarray(overlay_image)
+
+    return detection, prob3, binary_mask, layer_string, nested_text_list, text_colusion, overlay_image
 
 if __name__ == '__main__':
     

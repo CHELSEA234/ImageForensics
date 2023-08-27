@@ -4,9 +4,25 @@ from PyQt5.QtGui import QDragEnterEvent, QDropEvent, QImage, QPixmap, QFont, QSc
 from PyQt5.QtWidgets import QApplication, QLabel, QMainWindow, QPushButton, QVBoxLayout, QWidget, QMessageBox, QDialog
 from PyQt5 import uic
 
+class MyDialog(QDialog):
+    def __init__(self, text):
+        super().__init__()
+        self.initUI(text)
+    
+    def initUI(self, text):
+        self.setWindowTitle('Method')
+
+        label = QLabel(text)
+        label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+
+        layout = QVBoxLayout()
+        layout.addWidget(label)
+
+        self.setLayout(layout)
+        
 
 class MyGUI(QMainWindow):
-    def __init__(self, detection, prob, layer_string, image_path):
+    def __init__(self, detection, prob, layer_string, image_path, nested_text_list, text_colusion, overlay_image):
         super().__init__()
         uic.loadUi("form2.ui", self)
 
@@ -16,13 +32,23 @@ class MyGUI(QMainWindow):
         widthScreen = 1300
         heightScreen = 600
 
+        self.nested_text_list = nested_text_list
+        self.text_colusion = text_colusion
+        self.overlay_image = overlay_image
+
         if detection == "Fake":
-            self.label.setStyleSheet("background-color: #f7c994; color: Red; font-size:16pt;")
+            self.label.setStyleSheet(
+                    # "background-color: #f7c994; color: Red; font-size:18pt;"
+                    "background-color: #99004C; color: Yellow; bold; font-size: 18pt;"
+                    )
         else:
             self.label.setStyleSheet(
-                "background-color: #f7c994; color: Green; font-size:16pt;")
+                    # "background-color: #f7c994; color: Green; font-size:16pt;"
+                    "background-color: #99004C; color: Green; font-size:18pt;"
+                    )
         self.label.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.label.setText("  " + detection + "  " + str(100 * prob) + '%')
+        # self.label.setText("  " + detection + "  " + f"{(100*prob):.5f}" + '%')
         self.labelx = self.label.x()/widthScreen
         self.labely = self.label.y()/heightScreen
         self.labelw = self.label.width()/widthScreen
@@ -39,7 +65,8 @@ class MyGUI(QMainWindow):
 
         tmp = tmp[:-2]
 
-        self.label_2.setStyleSheet("background-color: #f7c994; color: black;")
+        # self.label_2.setStyleSheet("background-color: #f7c994; color: black; font-size:14pt;")
+        self.label_2.setStyleSheet("background-color: #99004C; color: white; font-size:14pt;")
         self.label_2.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.label_2.setText(tmp)
         self.label_2x = self.label_2.x()/widthScreen
@@ -66,12 +93,13 @@ class MyGUI(QMainWindow):
        
 
         self.label_7.setStyleSheet("background-color: #f7c994; color: black;")
+        self.label_7.setPixmap(QPixmap('overlay_image.png'))
         self.label_7x = self.label_7.x()/widthScreen
         self.label_7y = self.label_7.y()/heightScreen
         self.label_7w = self.label_7.width()/widthScreen
         self.label_7h = self.label_7.height()/heightScreen
         self.textLabel7 = QLabel(self)
-        self.textLabel7.setText("Feature Map")
+        self.textLabel7.setText("Overlay Image")
         self.textLabel7.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.textLabel7.setStyleSheet("color: black; font-weight: bold;")
         self.textLabel7.move(self.label_7.x(),  self.label_7.y() - 25)
@@ -100,7 +128,20 @@ class MyGUI(QMainWindow):
         self.textLabel9.setStyleSheet("color: black; font-weight: bold; font-size:8pt;")
         self.textLabel9.move(self.label_9.x(),  self.label_9.y() - 25)
 
-        self.label_11.setStyleSheet("background-color: #f7c994; color: black;")
+        tempo = self.text_colusion.split()
+        dem = 0
+        sentence = ""
+        for word in tempo:
+            dem += 1
+            sentence += word + " "
+            if dem == 9:
+                dem = 0
+                sentence += '\n'
+
+        # self.label_11.setStyleSheet("background-color: #f7c994; color: black;")
+        self.label_11.setStyleSheet("background-color: #99004C; color: white")
+        self.label_11.setText(sentence)
+        self.label_11.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.label_11x = self.label_11.x()/widthScreen
         self.label_11y = self.label_11.y()/heightScreen
         self.label_11w = self.label_11.width()/widthScreen
@@ -247,26 +288,27 @@ class MyGUI(QMainWindow):
         cursor_pos = event.pos()
         #print(cursor_pos, self.level1.geometry())
 
-        ck = False
+        print(self.nested_text_list)
+
+        text = None
         if self.level1.geometry().contains(cursor_pos):
-            ck = True
+            text = 'root'
         for i in range(2):
             if self.level2[i].geometry().contains(cursor_pos):
-                ck = True
+                text = self.nested_text_list[0][i]
         for i in range(4):
             if self.level3[i].geometry().contains(cursor_pos):
-                ck = True
+                text = self.nested_text_list[1][i]
         for i in range(4):
             if self.level4[i].geometry().contains(cursor_pos):
-                ck = True
+                text = self.nested_text_list[2][i]
         for i in range(13):
             if self.level5[i].geometry().contains(cursor_pos):
-                ck = True
+                text = self.nested_text_list[3][i]
 
-        if ck:
+        if text != None:
             # self.test.setStyleSheet("background-color: #00ccff; color: black;")
-            dlg = QDialog(self)
-            dlg.setWindowTitle("Dialog")
+            dlg = MyDialog(text)
             dlg.exec()
 
         else:
